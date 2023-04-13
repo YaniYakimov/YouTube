@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Setter
 @Getter
@@ -31,7 +32,10 @@ public class User {
     private int location;
     @Column
     private String telephone;
-    @Column(name = "profile_picture")
+    @Column(name = "profile_picture_url")
     private String profileImageUrl;
-
+    @OneToMany(mappedBy = "user")
+    private List<Video> videos;
+    @OneToMany(mappedBy = "user")
+    private List<Playlist> playlists;
 }
