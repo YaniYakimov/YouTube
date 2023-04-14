@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Setter
@@ -32,4 +33,6 @@ public class Comment {
 
     @OneToMany(mappedBy = "parent")
     private Set<Comment> replies;
+    @OneToMany(mappedBy = "comments", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CommentReaction> reactions = new HashSet<>();
 }

@@ -1,13 +1,14 @@
 package com.youtube.youtube.model.entities;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
+import java.util.HashSet;
+import java.util.Set;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Setter
 @Getter
@@ -34,11 +35,14 @@ public class Video {
     @JoinColumn(name = "visibility_id",nullable = false)
     private Visibility visibility;
 
+    @OneToMany(mappedBy = "videos", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<VideoReaction> reactions = new HashSet<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id",nullable = false)
     private Category category;
 
-    @ManyToMany(mappedBy = "videos")
+    @ManyToMany(mappedBy = "video")
     private Set<Playlist> playlists = new HashSet<>();
 
     @OneToMany(mappedBy = "video")
@@ -55,4 +59,5 @@ public class Video {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }
