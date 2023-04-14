@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -27,11 +30,36 @@ public class User {
     private LocalDateTime dateCreated;
     @Column
     private char gender;
-
+    @Column
     private int location;
     @Column
     private String telephone;
     @Column(name = "profile_picture")
     private String profileImageUrl;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "users_have_subscribers",
+            joinColumns = @JoinColumn(name = "subscribed_id"),
+            inverseJoinColumns = @JoinColumn(name = "subscriber_id")
+    )
+    private Set<User> subscribers = new HashSet<>();
+    @ManyToMany(mappedBy = "subscribers")
+    private Set<User> subscribedTo = new HashSet<>();
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CommentReaction> commentReactions = new HashSet<>();
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<VideoReaction> videoReactions = new HashSet<>();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id == user.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

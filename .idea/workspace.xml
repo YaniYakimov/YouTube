@@ -5,9 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c8d71b8a-5117-44bd-b59b-8396aa409d98" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/YouTube.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/YouTube.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/model/DTOs/UserBasicInfoDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YouTube/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/YouTube/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/model/DTOs/UserWithoutPassDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/model/DTOs/UserWithoutPassDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/model/entities/Comment.java" beforeDir="false" afterPath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/model/entities/Comment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/model/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/model/entities/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/service/UserService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,19 +29,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "D:/PROJECTS/Java/ITTalents/Module4/FinalProject/YouTube/YouTube",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/PROJECTS/Java/ITTalents/Module4/FinalProject/YouTube&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -48,6 +52,8 @@
       <updated>1681385380605</updated>
       <workItem from="1681385382411" duration="89000" />
       <workItem from="1681400240787" duration="614000" />
+      <workItem from="1681496709410" duration="66000" />
+      <workItem from="1681496805348" duration="57000" />
     </task>
     <servers />
   </component>
