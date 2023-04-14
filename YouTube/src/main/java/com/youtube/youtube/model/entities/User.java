@@ -5,7 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -35,7 +36,9 @@ public class User {
     @Column(name = "profile_picture_url")
     private String profileImageUrl;
     @OneToMany(mappedBy = "user")
-    private List<Video> videos;
+    private Set<Video> videos = new HashSet<>();
     @OneToMany(mappedBy = "user")
-    private List<Playlist> playlists;
+    private Set<Playlist> playlists = new HashSet<>();
+    @OneToMany(mappedBy = "user")
+    Set <VideoHistory> videoHistories = new HashSet<>();
 }

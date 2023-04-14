@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -26,9 +29,30 @@ public class Video {
     private long views;
     @Column(name = "video_url")
     private String videoUrl;
-    //todo visibility_id category_id
-    private int visibilityId;
-    private int categoryId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "visibility_id",nullable = false)
+    private Visibility visibility;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id",nullable = false)
+    private Category category;
+
+    @ManyToMany(mappedBy = "videos")
+    private Set<Playlist> playlists = new HashSet<>();
+
+    @OneToMany(mappedBy = "video")
+    Set <VideoHistory> videoHistories = new HashSet<>();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Video video = (Video) o;
+        return id == video.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
