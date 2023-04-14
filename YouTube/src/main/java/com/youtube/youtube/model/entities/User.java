@@ -5,9 +5,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+<<<<<<< HEAD
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+=======
+import java.util.List;
+>>>>>>> f826aecb783836ffffbbfc5339c33590fc038668
 
 @Setter
 @Getter
@@ -34,8 +38,9 @@ public class User {
     private int location;
     @Column
     private String telephone;
-    @Column(name = "profile_picture")
+    @Column(name = "profile_picture_url")
     private String profileImageUrl;
+<<<<<<< HEAD
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "users_have_subscribers",
@@ -62,4 +67,10 @@ public class User {
     public int hashCode() {
         return Objects.hash(id);
     }
+=======
+    @OneToMany(mappedBy = "user")
+    private List<Video> videos;
+    @OneToMany(mappedBy = "user")
+    private List<Playlist> playlists;
+>>>>>>> f826aecb783836ffffbbfc5339c33590fc038668
 }
