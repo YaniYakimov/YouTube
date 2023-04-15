@@ -1,6 +1,7 @@
 package com.youtube.youtube;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.NameTokenizers;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +16,11 @@ public class YouTubeApplication {
 
 	@Bean
 	public ModelMapper modelMapper(){
-		return new ModelMapper();
+		ModelMapper mapper = new ModelMapper();
+		mapper.getConfiguration()
+				.setSourceNameTokenizer(NameTokenizers.UNDERSCORE)
+				.setDestinationNameTokenizer(NameTokenizers.CAMEL_CASE);
+		return mapper;
 	}
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder(){

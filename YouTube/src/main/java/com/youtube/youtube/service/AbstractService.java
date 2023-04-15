@@ -1,9 +1,12 @@
 package com.youtube.youtube.service;
 
+import com.youtube.youtube.model.entities.User;
 import com.youtube.youtube.model.entities.Video;
 import com.youtube.youtube.model.exceptions.NotFoundException;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
+import com.youtube.youtube.model.repositories.UserRepository;
 import com.youtube.youtube.model.repositories.VideoRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
@@ -11,9 +14,13 @@ import java.util.Optional;
 public abstract class AbstractService {
     @Autowired
     protected VideoRepository videoRepository;
-
-
-
+    @Autowired
+    protected UserRepository userRepository;
+    @Autowired
+    protected ModelMapper mapper;
+    protected User getUserById(int id) {
+        return  userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
+    }
     protected Video findVideoById(int id){
         Optional<Video> opt = videoRepository.findById(id);
         if(opt.isEmpty()){
