@@ -11,11 +11,11 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<String> handleUnauthorized(Exception e ){
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
-    @ExceptionHandler(UnauthorizedException.class)
+    @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> handleNotFound(Exception e ){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
-    @ExceptionHandler(UnauthorizedException.class)
+    @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<String> handleBadRequest(Exception e ){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }

@@ -28,7 +28,7 @@ public class UserService extends AbstractService{
 //        if(!dto.password().equals(dto.confirmPassword())) {
 //            throw new BadRequestException("Password mismatch!");
 //        }
-        if(userRepository.existsByEmail(dto.email())) {
+        if (userRepository.existsByEmail(dto.email())) {
             throw new BadRequestException("Email already exist!");
         }
         UserMapper userMapper1 = UserMapper.INSTANCE;
