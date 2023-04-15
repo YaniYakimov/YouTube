@@ -1,9 +1,6 @@
 package com.youtube.youtube.controller;
 
-import com.youtube.youtube.model.DTOs.LoginDTO;
-import com.youtube.youtube.model.DTOs.RegisterDTO;
-import com.youtube.youtube.model.DTOs.UserBasicInfoDTO;
-import com.youtube.youtube.model.DTOs.UserWithoutPassDTO;
+import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.model.entities.User;
 import com.youtube.youtube.service.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -24,7 +21,8 @@ public class UserController extends AbstractController{
         return userService.getById(id);
     }
     @PostMapping("/users")
-    public UserWithoutPassDTO register(@RequestBody RegisterDTO dto) {
+    public UserWithoutPassDTOTest register(@RequestBody RegisterDTOTest dto) {
+        System.out.println("pochvame registraciq");
         return userService.register(dto);
     }
     @PostMapping("/users/sign-in")
