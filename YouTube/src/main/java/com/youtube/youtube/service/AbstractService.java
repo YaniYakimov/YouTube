@@ -8,9 +8,10 @@ import com.youtube.youtube.model.repositories.UserRepository;
 import com.youtube.youtube.model.repositories.VideoRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
+@Service
 public abstract class AbstractService {
     @Autowired
     protected VideoRepository videoRepository;

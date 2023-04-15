@@ -35,14 +35,14 @@ public class Video {
     @JoinColumn(name = "visibility_id",nullable = false)
     private Visibility visibility;
 
-    @OneToMany(mappedBy = "videos", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "video", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<VideoReaction> reactions = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id",nullable = false)
     private Category category;
 
-    @ManyToMany(mappedBy = "video")
+    @ManyToMany(mappedBy = "videos")
     private Set<Playlist> playlists = new HashSet<>();
 
     @OneToMany(mappedBy = "video", cascade = CascadeType.ALL, orphanRemoval = true)

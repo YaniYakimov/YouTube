@@ -25,18 +25,19 @@ public class UserService extends AbstractService{
     @Autowired
     private JavaMailSender mailSender;
     public UserWithoutPassDTO register(RegisterDTO dto) {
-        if(!dto.password().equals(dto.confirmPassword())) {
-            throw new BadRequestException("Password mismatch!");
-        }
+//        if(!dto.password().equals(dto.confirmPassword())) {
+//            throw new BadRequestException("Password mismatch!");
+//        }
         if(userRepository.existsByEmail(dto.email())) {
             throw new BadRequestException("Email already exist!");
         }
-        User user = mapper.map(dto, User.class);
+        UserMapper userMapper1 = UserMapper.INSTANCE;
+        User user = userMapper1.dtoToUser(dto);
         user.setPassword(encoder.encode(user.getPassword()));
         userRepository.save(user);
-        mailSender.sendEmail("qniqkimov@gmail.com", "Testing email sender", "Cheers, you just register");
-        UserMapper userMapper = UserMapper.INSTANCE;
-        return userMapper.user(user);
+        mailSender.sendEmail(user.getEmail(), "Welcome", "Cheers, you just got registered");
+        UserMapper userMapper2 = UserMapper.INSTANCE;
+        return userMapper2.user(user);
     }
 
     public UserWithoutPassDTO login(LoginDTO dto) {
@@ -65,12 +66,16 @@ public class UserService extends AbstractService{
         userRepository.deleteById(loggedId);
     }
 
-    public void logOut(int loggedId, HttpSession session) {
+    public void logOut(HttpSession session) {
         session.invalidate();
     }
 
     public List<User> getUserByName(UserBasicInfoDTO dto) {
-        return userRepository.getUserByFirstName(dto.firstName());
+        List<User> result = userRepository.getUserByFirstName(dto.firstName());
+        if(result.isEmpty()) {
+            throw new NotFoundException("There is/are no user/users with this name!");
+        }
+        return result;
     }
 
     public int subscribe(int subscriberId, int subscribedId) {

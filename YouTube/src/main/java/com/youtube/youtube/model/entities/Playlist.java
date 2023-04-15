@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Setter
 @Getter
-@Entity(name = "videos")
+@Entity(name = "playlists")
 public class Playlist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

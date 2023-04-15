@@ -31,7 +31,7 @@ public class User {
     private LocalDateTime dateCreated;
     @Column
     private char gender;
-    @Column
+    @Column(name = "location_id")
     private int location;
     @Column
     private String telephone;
@@ -47,9 +47,9 @@ public class User {
     private Set<User> subscribers = new HashSet<>();
     @ManyToMany(mappedBy = "subscribers")
     private Set<User> subscribedTo = new HashSet<>();
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CommentReaction> commentReactions = new HashSet<>();
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<VideoReaction> videoReactions = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

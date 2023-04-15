@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Setter
 @Getter
-@Entity(name = "users")
+@Entity(name = "comments")
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +33,6 @@ public class Comment {
 
     @OneToMany(mappedBy = "parent")
     private Set<Comment> replies;
-    @OneToMany(mappedBy = "comments", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CommentReaction> reactions = new HashSet<>();
 }
