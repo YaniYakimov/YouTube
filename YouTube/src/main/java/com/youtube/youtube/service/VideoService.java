@@ -13,8 +13,8 @@ public class VideoService extends AbstractService {
 
     public VideoInfoDTO getVideoById(int id) {
         Video video = findVideoById(id);
-        //TODO map video -> VideoInfoDTO
-        return null;
+        //TODO check video mapping
+        return mapper.map(video,VideoInfoDTO.class);
     }
 
     public SearchVideoDTO searchVideo(String name) {
@@ -23,8 +23,8 @@ public class VideoService extends AbstractService {
             throw new NotFoundException("Video not found.");
         }
         Video video = opt.get();
-        //TODO map video -> SearchVideoDTO
-        return null;
+        //TODO check video mapping
+        return mapper.map(video, SearchVideoDTO.class);
     }
 
     public VideoInfoDTO editVideo(int userId, int videoId, VideoInfoDTO editData) {
@@ -32,15 +32,14 @@ public class VideoService extends AbstractService {
 
         checkVideoOwner(video,userId);
         //TODO edit video
-        //map video
-        return null;
+        //TODO check video mapping
+        return mapper.map(video, VideoInfoDTO.class);
     }
 
     public void deleteVideo(int userId, int videoId) {
         Video video=findVideoById(videoId);
         checkVideoOwner(video,userId);
-        //TODO delete video
-        //map video
-
+        videoRepository.deleteById(videoId);
+        
     }
 }

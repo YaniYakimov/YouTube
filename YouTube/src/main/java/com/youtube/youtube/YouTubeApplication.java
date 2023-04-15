@@ -16,11 +16,11 @@ public class YouTubeApplication {
 
 	@Bean
 	public ModelMapper modelMapper(){
-		ModelMapper mapper = new ModelMapper();
-		mapper.getConfiguration()
-				.setSourceNameTokenizer(NameTokenizers.UNDERSCORE)
-				.setDestinationNameTokenizer(NameTokenizers.CAMEL_CASE);
-		return mapper;
+		return new ModelMapper();
+//		mapper.getConfiguration()
+//				.setSourceNameTokenizer(NameTokenizers.UNDERSCORE)
+//				.setDestinationNameTokenizer(NameTokenizers.CAMEL_CASE);
+//		return mapper;
 	}
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder(){

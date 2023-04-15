@@ -18,7 +18,7 @@ public class VideoController extends AbstractController{
     @GetMapping("/users/{id}/videos")
     public UserVideosDTO getUserVideos(@PathVariable int id){
 
-        //TODO userService.getUserVideos(id);
+        //TODO videoService.getUserVideos(id);
         return null;
     }
     @GetMapping("/videos/{id}")

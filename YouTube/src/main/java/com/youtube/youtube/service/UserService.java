@@ -1,9 +1,6 @@
 package com.youtube.youtube.service;
 
-import com.youtube.youtube.model.DTOs.LoginDTO;
-import com.youtube.youtube.model.DTOs.RegisterDTO;
-import com.youtube.youtube.model.DTOs.UserBasicInfoDTO;
-import com.youtube.youtube.model.DTOs.UserWithoutPassDTO;
+import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.model.entities.User;
 import com.youtube.youtube.model.exceptions.BadRequestException;
 import com.youtube.youtube.model.exceptions.NotFoundException;
@@ -24,20 +21,25 @@ public class UserService extends AbstractService{
     private BCryptPasswordEncoder encoder;
     @Autowired
     private JavaMailSender mailSender;
-    public UserWithoutPassDTO register(RegisterDTO dto) {
-//        if(!dto.password().equals(dto.confirmPassword())) {
-//            throw new BadRequestException("Password mismatch!");
-//        }
-        if (userRepository.existsByEmail(dto.email())) {
+    public UserWithoutPassDTOTest register(RegisterDTOTest dto) {
+        System.out.println("Pass origin is: " + dto.getPassword() + " and confirmation pass is " + dto.getConfirmPassword());
+        if(!dto.getPassword().equals(dto.getConfirmPassword())) {
+            throw new BadRequestException("Password mismatch!");
+        }
+        if(userRepository.existsByEmail(dto.getEmail())) {
             throw new BadRequestException("Email already exist!");
         }
-        UserMapper userMapper1 = UserMapper.INSTANCE;
-        User user = userMapper1.dtoToUser(dto);
+        System.out.println("minahme test1");
+//        UserMapper userMapper1 = UserMapper.INSTANCE;
+//        User user = userMapper1.dtoToUser(dto);
+        User user = mapper.map(dto, User.class);
         user.setPassword(encoder.encode(user.getPassword()));
         userRepository.save(user);
-        mailSender.sendEmail(user.getEmail(), "Welcome", "Cheers, you just got registered");
-        UserMapper userMapper2 = UserMapper.INSTANCE;
-        return userMapper2.user(user);
+        System.out.println("User is saved");
+//        mailSender.sendEmail(user.getEmail(), "Welcome", "Cheers, you just got registered");
+//        UserMapper userMapper2 = UserMapper.INSTANCE;
+//        userMapper2.user(user)
+        return mapper.map(user, UserWithoutPassDTOTest.class);
     }
 
     public UserWithoutPassDTO login(LoginDTO dto) {
@@ -91,3 +93,4 @@ public class UserService extends AbstractService{
     }
 
 }
+
