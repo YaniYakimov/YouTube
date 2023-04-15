@@ -12,7 +12,7 @@ public class Category {
     private int id;
     @Column
     private String type;
-    @OneToMany(mappedBy = "category")
-    private Set<Video> videos = new HashSet<>();
+//    @OneToMany(mappedBy = "category")
+//    private Set<Video> videos = new HashSet<>();
 
 }

@@ -12,8 +12,8 @@ public class Visibility {
     private int id;
     @Column
     private String type;
-    @OneToMany(mappedBy = "visibility")
-    private Set<Video> videos = new HashSet<>();
+//    @OneToMany(mappedBy = "visibility")
+//    private Set<Video> videos = new HashSet<>();
     @OneToMany(mappedBy = "visibility")
     private Set<Playlist> playlists = new HashSet<>();
 }

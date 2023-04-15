@@ -31,16 +31,20 @@ public class Video {
     @Column(name = "video_url")
     private String videoUrl;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "visibility_id",nullable = false)
-    private Visibility visibility;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "visibility_id",nullable = false)
+//    private Visibility visibility;
+    @Column(name = "visibility_id")
+    private int visibilityId;
 
     @OneToMany(mappedBy = "video", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<VideoReaction> reactions = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id",nullable = false)
-    private Category category;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "category_id",nullable = false)
+//    private Category category;
+    @Column(name = "category_id")
+    private int categoryId;
 
     @ManyToMany(mappedBy = "videos")
     private Set<Playlist> playlists = new HashSet<>();
