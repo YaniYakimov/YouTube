@@ -45,7 +45,7 @@ public class Video {
     @ManyToMany(mappedBy = "video")
     private Set<Playlist> playlists = new HashSet<>();
 
-    @OneToMany(mappedBy = "video")
+    @OneToMany(mappedBy = "video", cascade = CascadeType.ALL, orphanRemoval = true)
     Set <VideoHistory> videoHistories = new HashSet<>();
     @Override
     public boolean equals(Object o) {
