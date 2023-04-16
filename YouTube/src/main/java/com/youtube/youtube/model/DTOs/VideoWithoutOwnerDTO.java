@@ -16,7 +16,8 @@ public class VideoWithoutOwnerDTO{
     private int id;
     private LocalDateTime dateCreated;
     private String name;
-    private int visibilityId;
+//    private int visibilityId;
+    private VisibilityDTO visibility;
     private long views;
     private String videoUrl;
 }

@@ -1,7 +1,5 @@
 package com.youtube.youtube.model.DTOs;
 
-import com.youtube.youtube.model.entities.Category;
-import com.youtube.youtube.model.entities.Visibility;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,14 +15,14 @@ import java.time.LocalDateTime;
 
 public class VideoInfoDTO {
         private int id;
-        private UserBasicInfoDTO owner;
+        private UserBasicInfoDTO user;
         private LocalDateTime dateCreated;
         private String name;
         private String description;
         private long views;
         private String videoUrl;
-        private int visibilityId;
-        private int categoryId;
-//        private Visibility visibility;
-//        private Category category;
+//        private int visibilityId;
+//        private int categoryId;
+        private VisibilityDTO visibility;
+        private CategoryDTO category;
 }

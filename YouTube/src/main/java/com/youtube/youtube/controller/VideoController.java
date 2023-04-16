@@ -9,13 +9,13 @@ import com.youtube.youtube.service.VideoService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
 
 @RestController
 public class VideoController extends AbstractController{
-    @Autowired
-    private UserService userService;
+
     @Autowired
     private VideoService videoService;
     @GetMapping("/users/{id}/videos")
@@ -29,9 +29,13 @@ public class VideoController extends AbstractController{
     }
 
     @PostMapping("/videos")
-    public VideoInfoDTO uploadVideo(@RequestBody UploadVideoDTO uploadData, HttpSession s){
-        int userId=getLoggedId(s);
-        return videoService.uploadVideo(uploadData, userId);
+    public VideoInfoDTO uploadVideo(@RequestParam ("file") MultipartFile file, @RequestParam("name") String name,
+                                    @RequestParam("description") String description, @RequestParam("visibilityId") int visibilityId,
+                                    @RequestParam("categoryId") int categoryId, HttpSession s){
+        //todo fix
+        System.out.println("Start uploading");
+//        int userId=getLoggedId(s);
+        return videoService.uploadVideo(file,name,description,visibilityId,categoryId, 1);
     }
 
     @PostMapping("/videos/search")
