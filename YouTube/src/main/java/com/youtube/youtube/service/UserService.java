@@ -1,19 +1,20 @@
 package com.youtube.youtube.service;
 
 import com.youtube.youtube.model.DTOs.*;
+import com.youtube.youtube.model.entities.Location;
 import com.youtube.youtube.model.entities.User;
 import com.youtube.youtube.model.exceptions.BadRequestException;
 import com.youtube.youtube.model.exceptions.NotFoundException;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
 import jakarta.servlet.http.HttpSession;
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService extends AbstractService{
@@ -21,32 +22,40 @@ public class UserService extends AbstractService{
     private BCryptPasswordEncoder encoder;
     @Autowired
     private JavaMailSender mailSender;
-    public UserWithoutPassDTOTest register(RegisterDTOTest dto) {
-//        System.out.println("Pass origin is: " + dto.getPassword() + " and confirmation pass is " + dto.getConfirmPassword());
-        valid(dto);
-//        UserMapper userMapper1 = UserMapper.INSTANCE;
-//        User user = userMapper1.dtoToUser(dto);
+    public UserWithoutPassDTO register(RegisterDTO dto) {
+        if(!dto.getPassword().equals(dto.getConfirmPassword())) {
+            throw new BadRequestException("Password mismatch!");
+        }
+        if(userRepository.existsByEmail(dto.getEmail())) {
+            throw new BadRequestException("Email already exist!");
+        }
+        Optional<Location> location = locationRepository.findByCountry(dto.getLocation());
         User user = mapper.map(dto, User.class);
         user.setPassword(encoder.encode(user.getPassword()));
+        user.setDateCreated(LocalDateTime.now());
+        if(location.isPresent()) {
+            user.setLocation(location.get());
+        }
+        else {
+            throw new BadRequestException("No such country!");
+        }
         userRepository.save(user);
         System.out.println("User is saved");
 //        mailSender.sendEmail("qniqkimov@gmail.com", "Welcome", "Cheers, you just got registered");
 //        UserMapper userMapper2 = UserMapper.INSTANCE;
 //        userMapper2.user(user)
-        return mapper.map(user, UserWithoutPassDTOTest.class);
+        return mapper.map(user, UserWithoutPassDTO.class);
     }
 
     public UserWithoutPassDTO login(LoginDTO dto) {
-        Optional<User> user = userRepository.getUserByEmail(dto.email());
+        Optional<User> user = userRepository.getUserByEmail(dto.getEmail());
         if(!user.isPresent()) {
             throw new UnauthorizedException("Wrong credentials");
         }
-        if(!encoder.matches(dto.password(), user.get().getPassword())) {
+        if(!encoder.matches(dto.getPassword(), user.get().getPassword())) {
             throw new UnauthorizedException("Wrong credentials");
         }
-        UserMapper userMapper = UserMapper.INSTANCE;
-        UserWithoutPassDTO userDto = userMapper.user(user.get());
-        return userDto;
+        return mapper.map(user, UserWithoutPassDTO.class);
     }
 
     public UserWithoutPassDTO getById(int id) {
@@ -54,8 +63,7 @@ public class UserService extends AbstractService{
         if(!user.isPresent()) {
             throw  new NotFoundException("There is no such user");
         }
-        UserMapper userMapper = UserMapper.INSTANCE;
-        return userMapper.user(user.get());
+        return mapper.map(user, UserWithoutPassDTO.class);
     }
 
     public void deleteAccount(int loggedId) {
@@ -66,8 +74,11 @@ public class UserService extends AbstractService{
         session.invalidate();
     }
 
-    public List<User> getUserByName(UserBasicInfoDTO dto) {
-        List<User> result = userRepository.getUserByFirstName(dto.firstName());
+    public List<UserWithoutPassDTO> getUserByName(UserBasicInfoDTO dto) {
+        List<UserWithoutPassDTO> result = userRepository.getUserByFirstName(dto.getFirstName())
+                .stream()
+                .map(u -> mapper.map(u, UserWithoutPassDTO.class))
+                .collect(Collectors.toList());
         if(result.isEmpty()) {
             throw new NotFoundException("There is/are no user/users with this name!");
         }
@@ -86,20 +97,25 @@ public class UserService extends AbstractService{
         return subscribed.getSubscribers().size();
     }
 
-    public UserWithoutPassDTOTest edit(RegisterDTOTest dto) {
-        valid(dto);
-        User user = mapper.map(dto, User.class);
-        user.setPassword(encoder.encode(user.getPassword()));
-        userRepository.save(user);//TODO
-        return mapper.map(user, UserWithoutPassDTOTest.class);
+    public UserWithoutPassDTO edit(RegisterDTO dto) {
+        if(valid(dto)) {
+            User user = mapper.map(dto, User.class);
+            user.setPassword(encoder.encode(user.getPassword()));
+            userRepository.save(user);//TODO
+            return mapper.map(user, UserWithoutPassDTO.class);
+        }
+        else {
+            throw new BadRequestException("No such user!");
+        }
     }
-    private void valid(RegisterDTOTest dto) {
+    private boolean valid(RegisterDTO dto) {
         if(!dto.getPassword().equals(dto.getConfirmPassword())) {
             throw new BadRequestException("Password mismatch!");
         }
         if(userRepository.existsByEmail(dto.getEmail())) {
             throw new BadRequestException("Email already exist!");
         }
+        return true;
     }
 }
 

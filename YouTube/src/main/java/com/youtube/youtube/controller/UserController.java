@@ -21,14 +21,14 @@ public class UserController extends AbstractController{
         return userService.getById(id);
     }
     @PostMapping("/users")
-    public UserWithoutPassDTOTest register(@Valid @RequestBody RegisterDTOTest dto) {
+    public UserWithoutPassDTO register(@Valid @RequestBody RegisterDTO dto) {
         return userService.register(dto);
     }
     @PostMapping("/users/sign-in")
     public UserWithoutPassDTO login(@RequestBody LoginDTO dto, HttpSession s) {
         UserWithoutPassDTO respDTO = userService.login(dto);
         s.setAttribute(LOGGED, true);
-        s.setAttribute(LOGGED_ID, respDTO.id());
+        s.setAttribute(LOGGED_ID, respDTO.getId());
         return respDTO;
     }
     @PostMapping("/users/sign-out")
@@ -37,16 +37,16 @@ public class UserController extends AbstractController{
         return ResponseEntity.ok("Log-out was successful.");
     }
     @PostMapping("/users/search")
-    public List<User> searchByName(@RequestBody UserBasicInfoDTO dto) {
+    public List<UserWithoutPassDTO> searchByName(@RequestBody UserBasicInfoDTO dto) {
         return userService.getUserByName(dto);
     }
-    @PostMapping("/users/{subscribedId}/subscribe")
-    public int subscribe(@PathVariable int subscribedId, HttpSession session) {
+    @PostMapping("/users/{id}/subscribe")
+    public int subscribe(@PathVariable int id, HttpSession session) {
         int subscriberId = getLoggedId(session);
-        return userService.subscribe(subscriberId, subscribedId);
+        return userService.subscribe(subscriberId, id);
     }
     @PutMapping("localhost:8995/users")
-    public UserWithoutPassDTOTest edit(@Valid @RequestBody RegisterDTOTest dto, HttpSession session) {
+    public UserWithoutPassDTO edit(@Valid @RequestBody RegisterDTO dto, HttpSession session) {
         int loggedId = getLoggedId(session);
         return userService.edit(dto);
     }

@@ -1,9 +1,23 @@
 package com.youtube.youtube.model.DTOs;
-
-import jakarta.persistence.Column;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-public record UserWithoutPassDTO (int id, String firstName, String lastName, String email, LocalDateTime dateOfBirth, LocalDateTime dateCreated,
-                                  char gender, int location, String telephone, String profileImageUrl) {
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserWithoutPassDTO {
+    private int id;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private LocalDate dateOfBirth;
+    private LocalDateTime dateCreated;
+    private char gender;
+
 }

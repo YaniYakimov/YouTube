@@ -1,4 +1,13 @@
 package com.youtube.youtube.model.DTOs;
 
-public record LoginDTO (String email, String password) {
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class LoginDTO {
+    private String email;
+    private String password;
 }

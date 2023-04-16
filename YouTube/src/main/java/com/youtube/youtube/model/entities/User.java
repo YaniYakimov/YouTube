@@ -4,11 +4,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Objects;
-import java.util.List;
 
 @Setter
 @Getter
@@ -26,13 +26,14 @@ public class User {
     @Column
     private String password;
     @Column(name = "date_of_birth")
-    private LocalDateTime dateOfBirth;
+    private LocalDate dateOfBirth;
     @Column(name = "date_created")
     private LocalDateTime dateCreated;
     @Column
     private char gender;
-    @Column(name = "location_id")
-    private int location;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "location_id")
+    private Location location;
     @Column
     private String telephone;
     @Column(name = "profile_picture_url")
