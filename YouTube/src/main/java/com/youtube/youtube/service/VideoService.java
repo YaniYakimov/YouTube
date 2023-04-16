@@ -1,15 +1,13 @@
 package com.youtube.youtube.service;
 
+import com.youtube.youtube.model.DTOs.EditVideoDTO;
 import com.youtube.youtube.model.DTOs.SearchVideoDTO;
-import com.youtube.youtube.model.DTOs.UploadVideoDTO;
 import com.youtube.youtube.model.DTOs.UserVideosDTO;
 import com.youtube.youtube.model.DTOs.VideoInfoDTO;
-import com.youtube.youtube.model.entities.Category;
-import com.youtube.youtube.model.entities.User;
-import com.youtube.youtube.model.entities.Video;
-import com.youtube.youtube.model.entities.Visibility;
+import com.youtube.youtube.model.entities.*;
 import com.youtube.youtube.model.exceptions.NotFoundException;
 import com.youtube.youtube.model.repositories.CategoryRepository;
+import com.youtube.youtube.model.repositories.VideoReactionRepository;
 import com.youtube.youtube.model.repositories.VisibilityRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +17,16 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class VideoService extends AbstractService {
+    @Autowired
+    private VideoReactionRepository reactionRepository;
     @Autowired
     private VisibilityRepository visibilityRepository;
     @Autowired
@@ -38,24 +37,28 @@ public class VideoService extends AbstractService {
         return mapper.map(video,VideoInfoDTO.class);
     }
 
-    public Set<SearchVideoDTO> searchVideo(String name) {
-        Set<Video> videos = videoRepository.findAllByName(name);
+    public List<SearchVideoDTO> searchVideo(String name) {
+        List<Video> videos = videoRepository.findAllByTitle(name);
         if(videos.isEmpty()){
             throw new NotFoundException("There is no video with searched name.");
         }
         //TODO check video mapping
         return videos.stream()
                 .map(v -> mapper.map(v, SearchVideoDTO.class))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
-    public VideoInfoDTO editVideo(int userId, int videoId, VideoInfoDTO editData) {
+    public VideoInfoDTO editVideo(int userId, int videoId, EditVideoDTO editData) {
         Video video=findVideoById(videoId);
 
         checkVideoOwner(video,userId);
-        //TODO edit video
-        mapper.map(editData, video);
-        videoRepository.save(video);
+        //TODO check edit data
+//        mapper.map(editData, video);
+        video.setName(editData.getName());
+        video.setDescription(editData.getDescription());
+        video.setVisibility(findVisibility(editData.getVisibilityId()));
+        video.setCategory(findCategory(editData.getCategoryId()));
+
         //TODO check video mapping
         return mapper.map(video, VideoInfoDTO.class);
     }
@@ -93,11 +96,11 @@ public class VideoService extends AbstractService {
         Video video=new Video();
         video.setName(name);
         video.setDescription(description);
-        //todo check visibility
-        Visibility visibility=visibilityRepository.findById(visibilityId).get();
+
+        Visibility visibility=findVisibility(visibilityId);
         video.setVisibility(visibility);
-        //todo check category
-        Category category=categoryRepository.findById(categoryId).get();
+
+        Category category= findCategory(categoryId);
         video.setCategory(category);
 
         video.setUser(user);
@@ -108,4 +111,46 @@ public class VideoService extends AbstractService {
         videoRepository.save(video);
         return mapper.map(video, VideoInfoDTO.class);
     }
+
+    public VideoInfoDTO reactToVideo(int userId, int videoId, int reaction) {
+        //todo validate reaction
+        Video video=findVideoById(videoId);
+
+        UserReactToVideo combinationKey= new UserReactToVideo();
+        combinationKey.setVideoId(videoId);
+        combinationKey.setUserId(userId);
+
+        VideoReaction videoReaction=new VideoReaction();
+        videoReaction.setId(combinationKey);
+
+        Optional<VideoReaction> opt=reactionRepository.findById(videoReaction.getId());
+        if(opt.isPresent() && opt.get().getReaction()==reaction){
+            reactionRepository.delete(opt.get());
+        }
+        else{
+            videoReaction.setVideo(video);
+            videoReaction.setUser(getUserById(userId));
+            videoReaction.setReaction(reaction);
+            reactionRepository.save(videoReaction);
+        }
+        //todo return statement
+        return null;
+    }
+
+    private Visibility findVisibility(int visibilityId){
+        Optional<Visibility> opt =visibilityRepository.findById(visibilityId);
+        if(opt.isEmpty()){
+            throw new NotFoundException("There is no such visibility option.");
+        }
+        return opt.get();
+    }
+    private Category findCategory(int categoryId){
+        Optional<Category> opt =categoryRepository.findById(categoryId);
+        if(opt.isEmpty()){
+            throw new NotFoundException("There is no such category option.");
+        }
+        return opt.get();
+    }
+
+
 }

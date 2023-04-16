@@ -12,7 +12,7 @@ import lombok.Setter;
 @Entity
 public class VideoReaction {
     @EmbeddedId
-    UserReactToComment id;
+    UserReactToVideo id;
     @ManyToOne
     @MapsId("userId")
     @JoinColumn(name = "user_id")

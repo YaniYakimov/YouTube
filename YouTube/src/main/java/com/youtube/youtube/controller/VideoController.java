@@ -1,17 +1,16 @@
 package com.youtube.youtube.controller;
 
+import com.youtube.youtube.model.DTOs.EditVideoDTO;
 import com.youtube.youtube.model.DTOs.SearchVideoDTO;
-import com.youtube.youtube.model.DTOs.UploadVideoDTO;
 import com.youtube.youtube.model.DTOs.UserVideosDTO;
 import com.youtube.youtube.model.DTOs.VideoInfoDTO;
-import com.youtube.youtube.service.UserService;
 import com.youtube.youtube.service.VideoService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Set;
+import java.util.List;
 
 @RestController
 public class VideoController extends AbstractController{
@@ -34,17 +33,23 @@ public class VideoController extends AbstractController{
                                     @RequestParam("categoryId") int categoryId, HttpSession s){
         //todo fix
         System.out.println("Start uploading");
-//        int userId=getLoggedId(s);
-        return videoService.uploadVideo(file,name,description,visibilityId,categoryId, 1);
+        int userId=getLoggedId(s);
+        return videoService.uploadVideo(file,name,description,visibilityId,categoryId, userId);
     }
 
     @PostMapping("/videos/search")
-    public Set<SearchVideoDTO> searchVideo(String name){
+    public List<SearchVideoDTO> searchVideo(@RequestBody String name){
         return videoService.searchVideo(name);
     }
 
+    @PostMapping("/videos/{id}/reaction")
+    public VideoInfoDTO reactToVideo(@PathVariable ("id") int videoId, @RequestBody int reaction, HttpSession s){
+        int userId=getLoggedId(s);
+        return videoService.reactToVideo(userId, videoId, reaction);
+    }
+
     @PutMapping("/videos/{id}")
-    public VideoInfoDTO editVideo(@PathVariable ("id") int videoId, VideoInfoDTO editData, HttpSession s){
+    public VideoInfoDTO editVideo(@PathVariable ("id") int videoId, @RequestBody EditVideoDTO editData, HttpSession s){
         int userId=getLoggedId(s);
         return videoService.editVideo(userId, videoId, editData);
     }
