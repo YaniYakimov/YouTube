@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c8d71b8a-5117-44bd-b59b-8396aa409d98" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/model/DTOs/UserBasicInfoDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/controller/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/model/DTOs/UserWithoutPassDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/model/DTOs/UserWithoutPassDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/model/entities/Comment.java" beforeDir="false" afterPath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/model/entities/Comment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/model/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/model/entities/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/YouTube/src/main/java/com/youtube/youtube/service/UserService.java" afterDir="false" />
-    </list>
+    <list default="true" id="c8d71b8a-5117-44bd-b59b-8396aa409d98" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -54,6 +46,7 @@
       <workItem from="1681400240787" duration="614000" />
       <workItem from="1681496709410" duration="66000" />
       <workItem from="1681496805348" duration="57000" />
+      <workItem from="1681635090580" duration="60000" />
     </task>
     <servers />
   </component>

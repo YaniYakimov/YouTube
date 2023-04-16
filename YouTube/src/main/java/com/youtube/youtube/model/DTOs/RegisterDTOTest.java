@@ -14,9 +14,9 @@ import java.time.LocalDateTime;
 public class RegisterDTOTest {
     @Email(message = "Invalid email")
     private String email;
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+,.?\":{}|<>]){8,}$\n", message = "Week password")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_+,.?\":{}|<>])(?=\\S+$).{8,}$", message = "Week password")
     private String password;
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+,.?\":{}|<>]){8,}$\n", message = "Week password")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_+,.?\":{}|<>])(?=\\S+$).{8,}$", message = "Week password")
     private String confirmPassword;
     private String firstName;
     private String lastName;

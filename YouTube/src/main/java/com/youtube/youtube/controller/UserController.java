@@ -21,8 +21,7 @@ public class UserController extends AbstractController{
         return userService.getById(id);
     }
     @PostMapping("/users")
-    public UserWithoutPassDTOTest register(@RequestBody RegisterDTOTest dto) {
-        System.out.println("pochvame registraciq");
+    public UserWithoutPassDTOTest register(@Valid @RequestBody RegisterDTOTest dto) {
         return userService.register(dto);
     }
     @PostMapping("/users/sign-in")
@@ -35,7 +34,7 @@ public class UserController extends AbstractController{
     @PostMapping("/users/sign-out")
     public ResponseEntity<String> logOut(HttpSession s) {
         userService.logOut(s);
-        return ResponseEntity.ok("Account deleted successfully.");
+        return ResponseEntity.ok("Log-out was successful.");
     }
     @PostMapping("/users/search")
     public List<User> searchByName(@RequestBody UserBasicInfoDTO dto) {
@@ -45,6 +44,11 @@ public class UserController extends AbstractController{
     public int subscribe(@PathVariable int subscribedId, HttpSession session) {
         int subscriberId = getLoggedId(session);
         return userService.subscribe(subscriberId, subscribedId);
+    }
+    @PutMapping("localhost:8995/users")
+    public UserWithoutPassDTOTest edit(@Valid @RequestBody RegisterDTOTest dto, HttpSession session) {
+        int loggedId = getLoggedId(session);
+        return userService.edit(dto);
     }
     @DeleteMapping("/users")
     public ResponseEntity<String> deleteAccount(HttpSession s) {

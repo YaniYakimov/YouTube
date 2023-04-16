@@ -22,21 +22,15 @@ public class UserService extends AbstractService{
     @Autowired
     private JavaMailSender mailSender;
     public UserWithoutPassDTOTest register(RegisterDTOTest dto) {
-        System.out.println("Pass origin is: " + dto.getPassword() + " and confirmation pass is " + dto.getConfirmPassword());
-        if(!dto.getPassword().equals(dto.getConfirmPassword())) {
-            throw new BadRequestException("Password mismatch!");
-        }
-        if(userRepository.existsByEmail(dto.getEmail())) {
-            throw new BadRequestException("Email already exist!");
-        }
-        System.out.println("minahme test1");
+//        System.out.println("Pass origin is: " + dto.getPassword() + " and confirmation pass is " + dto.getConfirmPassword());
+        valid(dto);
 //        UserMapper userMapper1 = UserMapper.INSTANCE;
 //        User user = userMapper1.dtoToUser(dto);
         User user = mapper.map(dto, User.class);
         user.setPassword(encoder.encode(user.getPassword()));
         userRepository.save(user);
         System.out.println("User is saved");
-//        mailSender.sendEmail(user.getEmail(), "Welcome", "Cheers, you just got registered");
+//        mailSender.sendEmail("qniqkimov@gmail.com", "Welcome", "Cheers, you just got registered");
 //        UserMapper userMapper2 = UserMapper.INSTANCE;
 //        userMapper2.user(user)
         return mapper.map(user, UserWithoutPassDTOTest.class);
@@ -92,5 +86,20 @@ public class UserService extends AbstractService{
         return subscribed.getSubscribers().size();
     }
 
+    public UserWithoutPassDTOTest edit(RegisterDTOTest dto) {
+        valid(dto);
+        User user = mapper.map(dto, User.class);
+        user.setPassword(encoder.encode(user.getPassword()));
+        userRepository.save(user);//TODO
+        return mapper.map(user, UserWithoutPassDTOTest.class);
+    }
+    private void valid(RegisterDTOTest dto) {
+        if(!dto.getPassword().equals(dto.getConfirmPassword())) {
+            throw new BadRequestException("Password mismatch!");
+        }
+        if(userRepository.existsByEmail(dto.getEmail())) {
+            throw new BadRequestException("Email already exist!");
+        }
+    }
 }
 
