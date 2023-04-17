@@ -1,6 +1,18 @@
 package com.youtube.youtube.model.DTOs;
 
-import java.util.Set;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public record UserPlaylistsDTO (int id, String firstName, String lastName, Set<PlaylistWithoutOwnerDTO> videos) {
+import java.util.Set;
+@Getter
+@Setter
+@NoArgsConstructor
+
+public class UserPlaylistsDTO {
+    private int id;
+    private String firstName;
+    private String lastName;
+    private Set<PlaylistWithoutOwnerDTO> playlists;
+
 }

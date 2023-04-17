@@ -1,18 +1,20 @@
 package com.youtube.youtube.model.DTOs;
 
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+
 @Getter
 @Setter
 @NoArgsConstructor
 
-public class PlaylistWithoutOwnerDTO {
+public class VideoReactionDTO {
     private int id;
+    private UserBasicInfoDTO user;
     private String name;
-    int videos;
+    private long views;
+    private int likes;
+    private int dislikes;
 }

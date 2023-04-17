@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 @Service
 public abstract class AbstractService {
+    public static final int LIKE = 1;
+    public static final int DISLIKE = -1;
     @Autowired
     protected VideoRepository videoRepository;
     @Autowired

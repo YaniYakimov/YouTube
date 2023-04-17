@@ -1,9 +1,6 @@
 package com.youtube.youtube.controller;
 
-import com.youtube.youtube.model.DTOs.EditVideoDTO;
-import com.youtube.youtube.model.DTOs.SearchVideoDTO;
-import com.youtube.youtube.model.DTOs.UserVideosDTO;
-import com.youtube.youtube.model.DTOs.VideoInfoDTO;
+import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.service.VideoService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,9 +40,9 @@ public class VideoController extends AbstractController{
     }
 
     @PostMapping("/videos/{id}/reaction")
-    public VideoInfoDTO reactToVideo(@PathVariable ("id") int videoId, @RequestBody int reaction, HttpSession s){
-        int userId=getLoggedId(s);
-        return videoService.reactToVideo(userId, videoId, reaction);
+    public VideoReactionDTO reactToVideo(@PathVariable ("id") int videoId, @RequestBody Integer reaction, HttpSession s){
+//        int userId=getLoggedId(s);
+        return videoService.reactToVideo(1, videoId, reaction);
     }
 
     @PutMapping("/videos/{id}")
@@ -58,6 +55,11 @@ public class VideoController extends AbstractController{
     public void deleteVideo(@PathVariable ("id") int videoId, HttpSession s){
         int userId=getLoggedId(s);
         videoService.deleteVideo(userId, videoId);
+    }
+
+    @GetMapping("/videos/{id}/download")
+    public void downloadVideo(@PathVariable int id){
+        //todo
     }
 
 

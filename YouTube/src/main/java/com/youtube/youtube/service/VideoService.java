@@ -1,14 +1,12 @@
 package com.youtube.youtube.service;
 
-import com.youtube.youtube.model.DTOs.EditVideoDTO;
-import com.youtube.youtube.model.DTOs.SearchVideoDTO;
-import com.youtube.youtube.model.DTOs.UserVideosDTO;
-import com.youtube.youtube.model.DTOs.VideoInfoDTO;
+import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.model.entities.*;
 import com.youtube.youtube.model.exceptions.NotFoundException;
 import com.youtube.youtube.model.repositories.CategoryRepository;
 import com.youtube.youtube.model.repositories.VideoReactionRepository;
 import com.youtube.youtube.model.repositories.VisibilityRepository;
+import jakarta.transaction.Transactional;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -112,29 +110,27 @@ public class VideoService extends AbstractService {
         return mapper.map(video, VideoInfoDTO.class);
     }
 
-    public VideoInfoDTO reactToVideo(int userId, int videoId, int reaction) {
+    @Transactional
+    public VideoReactionDTO reactToVideo(int userId, int videoId, int reaction) {
         //todo validate reaction
         Video video=findVideoById(videoId);
+        User user=getUserById(userId);
+        UserReactToVideo userReactToVideo= new UserReactToVideo(videoId,userId);
 
-        UserReactToVideo combinationKey= new UserReactToVideo();
-        combinationKey.setVideoId(videoId);
-        combinationKey.setUserId(userId);
-
-        VideoReaction videoReaction=new VideoReaction();
-        videoReaction.setId(combinationKey);
-
-        Optional<VideoReaction> opt=reactionRepository.findById(videoReaction.getId());
-        if(opt.isPresent() && opt.get().getReaction()==reaction){
-            reactionRepository.delete(opt.get());
+        Optional<VideoReaction> existingReaction=reactionRepository.findById(userId, videoId);
+        if(existingReaction.isPresent() && existingReaction.get().getReaction()==reaction){
+            reactionRepository.delete(userId,videoId);
         }
         else{
-            videoReaction.setVideo(video);
-            videoReaction.setUser(getUserById(userId));
-            videoReaction.setReaction(reaction);
-            reactionRepository.save(videoReaction);
+            reactionRepository.save(userId, videoId, reaction);
         }
-        //todo return statement
-        return null;
+
+        int likes=reactionRepository.countByVideoIdAndReaction(videoId, LIKE);
+        int dislikes=reactionRepository.countByVideoIdAndReaction(videoId, DISLIKE);
+        VideoReactionDTO updatedVideo=mapper.map(video,VideoReactionDTO.class);
+        updatedVideo.setLikes(likes);
+        updatedVideo.setDislikes(dislikes);
+        return updatedVideo;
     }
 
     private Visibility findVisibility(int visibilityId){
