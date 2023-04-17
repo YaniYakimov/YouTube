@@ -3,9 +3,8 @@ package com.youtube.youtube.model.DTOs;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 import java.util.Set;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,7 +12,6 @@ import java.util.Set;
 public class PlaylistInfoDTO {
     private int id;
     private UserBasicInfoDTO owner;
-    private LocalDateTime dateCreated;
     private String name;
     private String description;
     private int views;

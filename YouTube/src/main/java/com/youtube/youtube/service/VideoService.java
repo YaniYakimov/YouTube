@@ -25,10 +25,7 @@ import java.util.stream.Collectors;
 public class VideoService extends AbstractService {
     @Autowired
     private VideoReactionRepository reactionRepository;
-    @Autowired
-    private VisibilityRepository visibilityRepository;
-    @Autowired
-    private CategoryRepository categoryRepository;
+
     public VideoInfoDTO getVideoById(int id) {
         Video video = findVideoById(id);
         //TODO check video mapping
@@ -132,20 +129,19 @@ public class VideoService extends AbstractService {
         return updatedVideo;
     }
 
-    private Visibility findVisibility(int visibilityId){
-        Optional<Visibility> opt =visibilityRepository.findById(visibilityId);
-        if(opt.isEmpty()){
-            throw new NotFoundException("There is no such visibility option.");
+    public File download(String fileName) {
+        File dir = new File("uploads");
+        File f = new File(dir, fileName);
+        if(f.exists()){
+            return f;
         }
-        return opt.get();
+        throw new NotFoundException("File not found.");
     }
-    private Category findCategory(int categoryId){
-        Optional<Category> opt =categoryRepository.findById(categoryId);
-        if(opt.isEmpty()){
-            throw new NotFoundException("There is no such category option.");
-        }
-        return opt.get();
-    }
+
+
+
+
+
 
 
 }

@@ -21,8 +21,8 @@ public class PlaylistController extends AbstractController{
     @PostMapping("/playlists")
     public PlaylistInfoDTO createPlaylist(@RequestBody CreatePlaylistDTO createData, HttpSession s){
         int userId=getLoggedId(s);
-        // todo return playlistService.createPlaylist(userId, createData);
-        return null;
+        // todo
+        return playlistService.createPlaylist(userId, createData);
     }
     @PostMapping("/playlists/search")
     public PlaylistWithoutOwnerDTO searchPlaylist(@RequestBody String name){

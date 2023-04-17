@@ -2,11 +2,15 @@ package com.youtube.youtube.controller;
 
 import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.service.VideoService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.List;
 
 @RestController
@@ -28,7 +32,7 @@ public class VideoController extends AbstractController{
     public VideoInfoDTO uploadVideo(@RequestParam ("file") MultipartFile file, @RequestParam("name") String name,
                                     @RequestParam("description") String description, @RequestParam("visibilityId") int visibilityId,
                                     @RequestParam("categoryId") int categoryId, HttpSession s){
-        //todo fix
+        //todo fix temp file bug
         System.out.println("Start uploading");
         int userId=getLoggedId(s);
         return videoService.uploadVideo(file,name,description,visibilityId,categoryId, userId);
@@ -41,8 +45,8 @@ public class VideoController extends AbstractController{
 
     @PostMapping("/videos/{id}/reaction")
     public VideoReactionDTO reactToVideo(@PathVariable ("id") int videoId, @RequestBody Integer reaction, HttpSession s){
-//        int userId=getLoggedId(s);
-        return videoService.reactToVideo(1, videoId, reaction);
+        int userId=getLoggedId(s);
+        return videoService.reactToVideo(userId, videoId, reaction);
     }
 
     @PutMapping("/videos/{id}")
@@ -57,9 +61,11 @@ public class VideoController extends AbstractController{
         videoService.deleteVideo(userId, videoId);
     }
 
-    @GetMapping("/videos/{id}/download")
-    public void downloadVideo(@PathVariable int id){
-        //todo
+    @SneakyThrows
+    @GetMapping("/videos/download/{fileName}")
+    public void downloadVideo(@PathVariable("fileName") String fileName, HttpServletResponse resp ){
+        File f = videoService.download(fileName);
+        Files.copy(f.toPath(), resp.getOutputStream());
     }
 
 

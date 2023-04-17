@@ -1,13 +1,12 @@
 package com.youtube.youtube.service;
 
+import com.youtube.youtube.model.entities.Category;
 import com.youtube.youtube.model.entities.User;
 import com.youtube.youtube.model.entities.Video;
+import com.youtube.youtube.model.entities.Visibility;
 import com.youtube.youtube.model.exceptions.NotFoundException;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
-import com.youtube.youtube.model.repositories.CommentRepository;
-import com.youtube.youtube.model.repositories.LocationRepository;
-import com.youtube.youtube.model.repositories.UserRepository;
-import com.youtube.youtube.model.repositories.VideoRepository;
+import com.youtube.youtube.model.repositories.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +24,10 @@ public abstract class AbstractService {
     protected CommentRepository commentRepository;
     @Autowired
     protected LocationRepository locationRepository;
+    @Autowired
+    protected VisibilityRepository visibilityRepository;
+    @Autowired
+    protected CategoryRepository categoryRepository;
     @Autowired
     protected ModelMapper mapper;
     protected User getUserById(int id) {
@@ -47,11 +50,26 @@ public abstract class AbstractService {
 
     protected boolean validReaction(int reaction){
         switch (reaction){
-            case 1:
-            case -1:
+            case LIKE:
+            case DISLIKE:
                 return true;
             default:
                 throw new NotFoundException("There is no such reaction");
         }
+    }
+
+    protected Visibility findVisibility(int visibilityId){
+        Optional<Visibility> opt =visibilityRepository.findById(visibilityId);
+        if(opt.isEmpty()){
+            throw new NotFoundException("There is no such visibility option.");
+        }
+        return opt.get();
+    }
+    protected Category findCategory(int categoryId){
+        Optional<Category> opt =categoryRepository.findById(categoryId);
+        if(opt.isEmpty()){
+            throw new NotFoundException("There is no such category option.");
+        }
+        return opt.get();
     }
 }
