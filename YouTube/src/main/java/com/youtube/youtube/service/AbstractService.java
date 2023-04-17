@@ -4,6 +4,8 @@ import com.youtube.youtube.model.entities.User;
 import com.youtube.youtube.model.entities.Video;
 import com.youtube.youtube.model.exceptions.NotFoundException;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
+import com.youtube.youtube.model.repositories.CommentRepository;
+import com.youtube.youtube.model.repositories.LocationRepository;
 import com.youtube.youtube.model.repositories.UserRepository;
 import com.youtube.youtube.model.repositories.VideoRepository;
 import org.modelmapper.ModelMapper;
@@ -19,6 +21,10 @@ public abstract class AbstractService {
     protected VideoRepository videoRepository;
     @Autowired
     protected UserRepository userRepository;
+    @Autowired
+    protected CommentRepository commentRepository;
+    @Autowired
+    protected LocationRepository locationRepository;
     @Autowired
     protected ModelMapper mapper;
     protected User getUserById(int id) {

@@ -1,11 +1,27 @@
 package com.youtube.youtube.model.DTOs;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-
-public record RegisterDTO(@Email(message = "Invalid email") String email,
-                          @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+,.?\":{}|<>]){8,}$\n", message = "Week password") String password,
-                          @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+,.?\":{}|<>]){8,}$\n", message = "Week password")String confirmPassword,
-                          String firstName, String lastName, LocalDateTime dateOfBirth, LocalDateTime dateCreated, char gender, int location) {
+@Getter
+@Setter
+@NoArgsConstructor
+public class RegisterDTO {
+    @Email(message = "Invalid email")
+    private String email;
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_+,.?\":{}|<>])(?=\\S+$).{8,}$", message = "Week password")
+    private String password;
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_+,.?\":{}|<>])(?=\\S+$).{8,}$", message = "Week password")
+    private String confirmPassword;
+    private String firstName;
+    private String lastName;
+    private LocalDate dateOfBirth;
+    private LocalDateTime dateCreated;
+    private char gender;
+    private String location;
 }

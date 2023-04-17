@@ -1,4 +1,13 @@
 package com.youtube.youtube.model.DTOs;
 
-public record UserBasicInfoDTO(String firstName, String lastName) {
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class UserBasicInfoDTO {
+    private String firstName;
+    private String lastName;
 }
