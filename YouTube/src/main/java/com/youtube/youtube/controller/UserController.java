@@ -46,7 +46,7 @@ public class UserController extends AbstractController{
         int subscriberId = getLoggedId(session);
         return userService.subscribe(subscriberId, id);
     }
-    @PutMapping("localhost:8995/users")
+    @PutMapping("/users")
     public UserWithoutPassDTO edit(@Valid @RequestBody RegisterDTO dto, HttpSession session) {
         int loggedId = getLoggedId(session);
         if(session.getAttribute(LOGGED_ID) == null) {

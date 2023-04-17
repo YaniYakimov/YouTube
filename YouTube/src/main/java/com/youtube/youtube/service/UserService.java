@@ -29,9 +29,6 @@ public class UserService extends AbstractService{
         if(userRepository.existsByEmail(dto.getEmail())) {
             throw new BadRequestException("Email already exist!");
         }
-        if(dto.getGender() != 'M' || dto.getGender() != 'F') {
-            throw new BadRequestException("Wrong gender!");
-        }
         Optional<Location> location = locationRepository.findByCountry(dto.getLocation());
         User user = mapper.map(dto, User.class);
         user.setPassword(encoder.encode(user.getPassword()));
