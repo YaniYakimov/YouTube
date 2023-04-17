@@ -31,8 +31,8 @@ public class VideoService extends AbstractService {
         return mapper.map(video,VideoInfoDTO.class);
     }
 
-    public List<SearchVideoDTO> searchVideo(String name) {
-        List<Video> videos = videoRepository.findAllByTitle(name);
+    public List<SearchVideoDTO> searchVideo(VideoWithoutOwnerDTO searchData) {
+        List<Video> videos = videoRepository.findAllByName(searchData.getName());
         if(videos.isEmpty()){
             throw new NotFoundException("There is no video with searched name.");
         }

@@ -39,8 +39,8 @@ public class VideoController extends AbstractController{
     }
 
     @PostMapping("/videos/search")
-    public List<SearchVideoDTO> searchVideo(@RequestBody String name){
-        return videoService.searchVideo(name);
+    public List<SearchVideoDTO> searchVideo(@RequestBody VideoWithoutOwnerDTO searchData){
+        return videoService.searchVideo(searchData);
     }
 
     @PostMapping("/videos/{id}/reaction")

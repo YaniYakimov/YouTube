@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -12,4 +13,6 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Integer> {
     Optional<Playlist> findByNameAndUser(String name, User user);
     @Query(value = "SELECT COUNT(*) FROM playlists_have_videos WHERE playlist_id = ?", nativeQuery = true)
     int countVideosInPlaylist(int playlistId);
+
+    List<Playlist> findAllByName(String name);
 }
