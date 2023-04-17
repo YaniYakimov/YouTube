@@ -1,13 +1,12 @@
 package com.youtube.youtube.controller;
 
-import com.youtube.youtube.model.DTOs.CreatePlaylistDTO;
-import com.youtube.youtube.model.DTOs.PlaylistInfoDTO;
-import com.youtube.youtube.model.DTOs.PlaylistWithoutOwnerDTO;
-import com.youtube.youtube.model.DTOs.UserPlaylistsDTO;
+import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.service.PlaylistService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class PlaylistController extends AbstractController{
@@ -23,9 +22,8 @@ public class PlaylistController extends AbstractController{
         return playlistService.createPlaylist(userId, createData);
     }
     @PostMapping("/playlists/search")
-    public PlaylistWithoutOwnerDTO searchPlaylist(@RequestBody String name){
-        // todo return playlistService.searchPlaylist(name);
-        return null;
+    public List<SearchPlayListDTO> searchPlaylist(@RequestBody CreatePlaylistDTO searchData){
+        return playlistService.searchPlaylist(searchData);
     }
 
     @PutMapping("/playlists/{id}/videos")
@@ -35,17 +33,17 @@ public class PlaylistController extends AbstractController{
     }
 
     @PutMapping("/playlists/{id}")
-    public PlaylistInfoDTO editPlaylist(@RequestParam ("id") int playlistId, @RequestBody CreatePlaylistDTO editData, HttpSession s){
+    public PlaylistInfoDTO editPlaylist(@PathVariable ("id") int playlistId, @RequestBody CreatePlaylistDTO editData, HttpSession s){
         int userId=getLoggedId(s);
-        // todo return playlistService.editPlaylist(userId, playlistId, editData);
-        return null;
+        return playlistService.editPlaylist(userId, playlistId, editData);
     }
 
     @DeleteMapping("/playlists/{id}")
-    public void deletePlaylist(@RequestParam ("id") int playlistId, HttpSession s){
+    public void deletePlaylist(@PathVariable ("id") int playlistId, HttpSession s){
         int userId=getLoggedId(s);
         //todo playlistService.deletePlaylist(userId, playlistId);
 
     }
 
+    //todo playlistSort
 }

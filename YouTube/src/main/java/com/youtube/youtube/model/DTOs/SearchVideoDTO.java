@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 
 public class SearchVideoDTO {
     private int id;
-    private UserBasicInfoDTO owner;
+    private UserBasicInfoDTO user;
     private LocalDateTime dateCreated;
     private  String name;
     private long views;

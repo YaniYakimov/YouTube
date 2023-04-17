@@ -11,7 +11,9 @@ import com.youtube.youtube.model.repositories.PlaylistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PlaylistService extends AbstractService {
@@ -42,7 +44,7 @@ public class PlaylistService extends AbstractService {
         if(user.getPlaylists().isEmpty()){
             throw new NotFoundException("This user has no playlists.");
         }
-//        return mapper.map(user, UserPlaylistsDTO.class);
+
         UserPlaylistsDTO userPlaylistsDTO= mapper.map(user, UserPlaylistsDTO.class);
         for(PlaylistWithoutOwnerDTO playlistDTO : userPlaylistsDTO.getPlaylists()){
             playlistDTO.setVideosCount(playlistRepository.countVideosInPlaylist(playlistDTO.getId()));
@@ -57,5 +59,27 @@ public class PlaylistService extends AbstractService {
         playlist.getVideos().add(video);
         playlistRepository.save(playlist);
         return "Video added to playlist "+playlist.getName();
+    }
+
+    public PlaylistInfoDTO editPlaylist(int userId, int playlistId, CreatePlaylistDTO editData) {
+        Playlist playlist=findPlaylistById(playlistId);
+        checkPlaylistOwner(playlist, userId);
+        playlist.setName(editData.getName());
+        playlist.setDescription(editData.getDescription());
+
+        Visibility visibility= findVisibility(editData.getVisibilityId());
+        playlist.setVisibility(visibility);
+        playlistRepository.save(playlist);
+        return mapper.map(playlist, PlaylistInfoDTO.class);
+    }
+
+    public List<SearchPlayListDTO> searchPlaylist(CreatePlaylistDTO searchData) {
+        List<Playlist> result = playlistRepository.findAllByName(searchData.getName());
+        if(result.isEmpty()) {
+            throw new NotFoundException("There is no playlist with searched name.");
+        }
+        return  result.stream()
+                .map(p -> mapper.map(p, SearchPlayListDTO.class))
+                .collect(Collectors.toList());
     }
 }

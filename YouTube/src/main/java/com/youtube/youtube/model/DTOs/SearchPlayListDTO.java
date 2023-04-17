@@ -1,7 +1,16 @@
 package com.youtube.youtube.model.DTOs;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
 
-public record SearchPlayListDTO (int id, UserBasicInfoDTO owner, String name, String playlistUrl, int videos) {
+public class SearchPlayListDTO extends PlaylistWithoutOwnerDTO {
+    private UserBasicInfoDTO user;
+    private String playlistUrl;
 }
