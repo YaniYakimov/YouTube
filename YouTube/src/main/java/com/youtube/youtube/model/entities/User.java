@@ -28,7 +28,7 @@ public class User {
     @Column(name = "date_created")
     private LocalDateTime dateCreated;
     @Column
-    private char gender;
+    private String gender;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id")
     private Location location;

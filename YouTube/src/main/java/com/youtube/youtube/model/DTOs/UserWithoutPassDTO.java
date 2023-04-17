@@ -18,6 +18,6 @@ public class UserWithoutPassDTO {
     private String email;
     private LocalDate dateOfBirth;
     private LocalDateTime dateCreated;
-    private char gender;
+    private String gender;
 
 }

@@ -23,7 +23,8 @@ public class RegisterDTO {
 //    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_+,.?\":{}|<>])(?=\\S+$).{8,}$", message = "Invalid date")
     private LocalDate dateOfBirth;
     private LocalDateTime dateCreated;
-    private char gender;
+    @Pattern(regexp = "^(M|F)$", message = "Wrong gender")
+    private String gender;
     private String location;
     private String telephone;
     private String profilePicture;

@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c8d71b8a-5117-44bd-b59b-8396aa409d98" name="Changes" comment="" />
+    <list default="true" id="c8d71b8a-5117-44bd-b59b-8396aa409d98" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -26,7 +29,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/PROJECTS/Java/ITTalents/Module4/FinalProject/YouTube&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/yaniyakimov/ItTalent/GitHubP_Projects/YouTube&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -47,6 +50,9 @@
       <workItem from="1681496709410" duration="66000" />
       <workItem from="1681496805348" duration="57000" />
       <workItem from="1681635090580" duration="60000" />
+      <workItem from="1681750730268" duration="56000" />
+      <workItem from="1681750867513" duration="25000" />
+      <workItem from="1681750909880" duration="183000" />
     </task>
     <servers />
   </component>
