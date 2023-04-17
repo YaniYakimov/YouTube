@@ -15,13 +15,11 @@ public class PlaylistController extends AbstractController{
     private PlaylistService playlistService;
     @GetMapping("/users/{id}/playlists")
     public UserPlaylistsDTO getUserPlaylists(@PathVariable int id){
-        // todo return playlistService.getUserPlaylists(id);
-        return null;
+        return playlistService.getUserPlaylists(id);
     }
     @PostMapping("/playlists")
     public PlaylistInfoDTO createPlaylist(@RequestBody CreatePlaylistDTO createData, HttpSession s){
         int userId=getLoggedId(s);
-        // todo
         return playlistService.createPlaylist(userId, createData);
     }
     @PostMapping("/playlists/search")
@@ -30,11 +28,10 @@ public class PlaylistController extends AbstractController{
         return null;
     }
 
-    @PostMapping("/playlists/{playlist-id}/videos")
-    public String addVideoToPlaylist(@RequestParam ("playlist-id") int playlistId,@RequestBody int videoId, HttpSession s ){
+    @PutMapping("/playlists/{id}/videos")
+    public String addVideoToPlaylist(@PathVariable ("id") int playlistId,@RequestBody int videoId, HttpSession s ){
         int userId=getLoggedId(s);
-        // todo return playlistService.addVideoToPlaylist(userId, playlistId, videoId);
-        return null;
+        return playlistService.addVideoToPlaylist(userId, playlistId, videoId);
     }
 
     @PutMapping("/playlists/{id}")

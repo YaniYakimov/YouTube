@@ -11,11 +11,12 @@ import java.util.Set;
 
 public class PlaylistInfoDTO {
     private int id;
-    private UserBasicInfoDTO owner;
+    private UserBasicInfoDTO user;
     private String name;
     private String description;
     private int views;
     private String playlistUrl;
-    private int visibility;
+//    private int visibilityId;
+    private VisibilityDTO visibility;
     private Set<VideoWithoutOwnerDTO> videos;
 }

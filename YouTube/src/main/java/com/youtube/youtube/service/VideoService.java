@@ -28,7 +28,6 @@ public class VideoService extends AbstractService {
 
     public VideoInfoDTO getVideoById(int id) {
         Video video = findVideoById(id);
-        //TODO check video mapping
         return mapper.map(video,VideoInfoDTO.class);
     }
 
@@ -65,8 +64,8 @@ public class VideoService extends AbstractService {
 
     }
 
-    public UserVideosDTO getUserVideos(int id) {
-        User user=getUserById(id);
+    public UserVideosDTO getUserVideos(int userId) {
+        User user=getUserById(userId);
         if(user.getVideos().isEmpty()){
             throw new NotFoundException("This user has no videos.");
         }
