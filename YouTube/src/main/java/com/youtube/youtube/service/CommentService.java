@@ -28,8 +28,10 @@ public class CommentService extends AbstractService{
         if(!video.isPresent()) {
             throw new BadRequestException("No such video!");
         }
-        List<CommentBasicDTO> comments = video.get().getComments().stream().map(c -> mapper.map(c, CommentBasicDTO.class)).collect(Collectors.toList());
-        return comments;
+        return video.get().getComments()
+                .stream()
+                .map(c -> mapper.map(c, CommentBasicDTO.class))
+                .collect(Collectors.toList());
     }
 
     public CommentBasicDTO createComment(CommentBasicDTO dto, int userId, int videoId) {

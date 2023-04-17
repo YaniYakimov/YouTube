@@ -6,9 +6,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Objects;
+import java.util.*;
 
 @Setter
 @Getter
@@ -59,6 +57,8 @@ public class User {
     private Set<Playlist> playlists = new HashSet<>();
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     Set <VideoHistory> videoHistories = new HashSet<>();
+    @OneToMany(mappedBy = "owner")
+    private List<Comment> comments = new ArrayList<>();
 
 
 //    private List<Playlist> playlists;

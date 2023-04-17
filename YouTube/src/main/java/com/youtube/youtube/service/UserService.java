@@ -29,6 +29,9 @@ public class UserService extends AbstractService{
         if(userRepository.existsByEmail(dto.getEmail())) {
             throw new BadRequestException("Email already exist!");
         }
+        if(dto.getGender() != 'M' || dto.getGender() != 'F') {
+            throw new BadRequestException("Wrong gender!");
+        }
         Optional<Location> location = locationRepository.findByCountry(dto.getLocation());
         User user = mapper.map(dto, User.class);
         user.setPassword(encoder.encode(user.getPassword()));
@@ -40,10 +43,7 @@ public class UserService extends AbstractService{
             throw new BadRequestException("No such country!");
         }
         userRepository.save(user);
-        System.out.println("User is saved");
 //        mailSender.sendEmail("qniqkimov@gmail.com", "Welcome", "Cheers, you just got registered");
-//        UserMapper userMapper2 = UserMapper.INSTANCE;
-//        userMapper2.user(user)
         return mapper.map(user, UserWithoutPassDTO.class);
     }
 
@@ -97,25 +97,30 @@ public class UserService extends AbstractService{
         return subscribed.getSubscribers().size();
     }
 
-    public UserWithoutPassDTO edit(RegisterDTO dto) {
-        if(valid(dto)) {
-            User user = mapper.map(dto, User.class);
-            user.setPassword(encoder.encode(user.getPassword()));
-            userRepository.save(user);//TODO
-            return mapper.map(user, UserWithoutPassDTO.class);
-        }
-        else {
+    public UserWithoutPassDTO edit(RegisterDTO dto, int loggedId) {
+        Optional<User> user = userRepository.findById(loggedId);
+        if(!user.isPresent()) {
             throw new BadRequestException("No such user!");
         }
-    }
-    private boolean valid(RegisterDTO dto) {
-        if(!dto.getPassword().equals(dto.getConfirmPassword())) {
-            throw new BadRequestException("Password mismatch!");
+        Optional<Location> location = locationRepository.findByCountry(dto.getLocation());
+        User u = user.get();
+        if(location.isPresent()) {
+            u.setLocation(location.get());
         }
-        if(userRepository.existsByEmail(dto.getEmail())) {
-            throw new BadRequestException("Email already exist!");
+        else {
+            throw new BadRequestException("No such country!");
         }
-        return true;
+        u.setPassword(dto.getPassword());
+        u.setEmail(dto.getEmail());
+        u.setGender(dto.getGender());
+        u.setDateCreated(dto.getDateCreated());
+        u.setFirstName(dto.getFirstName());
+        u.setLastName(dto.getLastName());
+        u.setDateOfBirth(dto.getDateOfBirth());
+        u.setProfilePicture(dto.getProfilePicture());
+        u.setTelephone(dto.getTelephone());
+        userRepository.save(u);
+        return mapper.map(u, UserWithoutPassDTO.class);
     }
 }
 
