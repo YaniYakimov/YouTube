@@ -44,4 +44,14 @@ public abstract class AbstractService {
         }
         return true;
     }
+
+    protected boolean validReaction(int reaction){
+        switch (reaction){
+            case 1:
+            case -1:
+                return true;
+            default:
+                throw new NotFoundException("There is no such reaction");
+        }
+    }
 }

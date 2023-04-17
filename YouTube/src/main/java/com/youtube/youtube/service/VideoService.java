@@ -77,8 +77,9 @@ public class VideoService extends AbstractService {
     }
 
 
+
     @SneakyThrows
-    public VideoInfoDTO uploadVideo(MultipartFile file, String name, String description,int visibilityId, int categoryId, int userId) {
+    public VideoInfoDTO uploadVideo(MultipartFile file, String name, String description, int visibilityId, int categoryId, int userId) {
         //todo validate info
         String ext = FilenameUtils.getExtension(file.getOriginalFilename());
         String fileName = UUID.randomUUID().toString() + "."+ext;
@@ -112,10 +113,8 @@ public class VideoService extends AbstractService {
 
     @Transactional
     public VideoReactionDTO reactToVideo(int userId, int videoId, int reaction) {
-        //todo validate reaction
+        validReaction(reaction);
         Video video=findVideoById(videoId);
-        User user=getUserById(userId);
-        UserReactToVideo userReactToVideo= new UserReactToVideo(videoId,userId);
 
         Optional<VideoReaction> existingReaction=reactionRepository.findById(userId, videoId);
         if(existingReaction.isPresent() && existingReaction.get().getReaction()==reaction){
