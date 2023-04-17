@@ -37,7 +37,7 @@ public class User {
     @Column(name = "profile_picture_url")
     private String profilePicture;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany//(fetch = FetchType.LAZY)
     @JoinTable(
             name = "users_have_subscribers",
             joinColumns = @JoinColumn(name = "subscribed_id"),

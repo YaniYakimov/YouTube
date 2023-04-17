@@ -1,6 +1,7 @@
 package com.youtube.youtube.controller;
 
 import com.youtube.youtube.model.DTOs.CommentBasicDTO;
+import com.youtube.youtube.model.DTOs.CommentCreateDTO;
 import com.youtube.youtube.model.DTOs.EditVideoDTO;
 import com.youtube.youtube.model.DTOs.VideoInfoDTO;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
@@ -24,8 +25,8 @@ public class CommentController extends AbstractController{
     public List<CommentBasicDTO> getByVideoId(@PathVariable("video-id") int videoId) {
         return commentService.get(videoId);
     }
-    @PostMapping("/comments/{video-id}")
-    public CommentBasicDTO createComment(@RequestBody CommentBasicDTO dto, HttpSession session, @PathVariable("video-id") int videoId) {
+    @PostMapping("/comments/{video-id}/create")
+    public CommentCreateDTO createComment(@RequestBody CommentCreateDTO dto, HttpSession session, @PathVariable("video-id") int videoId) {
         int userId;
         if(session.getAttribute(LOGGED_ID) == null) {
             throw new UnauthorizedException("You have to logIn first!");

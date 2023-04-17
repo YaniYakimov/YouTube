@@ -91,6 +91,7 @@ public class UserService extends AbstractService{
         else {
             subscribed.getSubscribers().add(subscriber);
         }
+        userRepository.save(subscribed);
         return subscribed.getSubscribers().size();
     }
 
