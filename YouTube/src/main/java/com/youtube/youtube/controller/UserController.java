@@ -59,9 +59,14 @@ public class UserController extends AbstractController{
     @DeleteMapping("/users")
     public ResponseEntity<String> deleteAccount(HttpSession s) {
         int loggedId = getLoggedId(s);
-        userService.deleteAccount(loggedId);
-        s.invalidate();
-        return ResponseEntity.ok("Account deleted successfully.");
+        if(s.getAttribute(LOGGED_ID) == null) {
+            throw new UnauthorizedException("You have to logIn first!");
+        }
+        else {
+            userService.deleteAccount(loggedId);
+            s.invalidate();
+            return ResponseEntity.ok("Account deleted successfully.");
+        }
     }
     //todo proba
 }

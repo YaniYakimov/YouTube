@@ -1,6 +1,8 @@
 package com.youtube.youtube.service;
 
 import com.youtube.youtube.model.DTOs.CommentBasicDTO;
+import com.youtube.youtube.model.DTOs.CommentCreateDTO;
+import com.youtube.youtube.model.DTOs.UserBasicInfoDTO;
 import com.youtube.youtube.model.DTOs.VideoReactionDTO;
 import com.youtube.youtube.model.entities.*;
 import com.youtube.youtube.model.exceptions.BadRequestException;
@@ -38,16 +40,17 @@ public class CommentService extends AbstractService{
                 .collect(Collectors.toList());
     }
 
-    public CommentBasicDTO createComment(CommentBasicDTO dto, int userId, int videoId) {
+    public CommentCreateDTO createComment(CommentCreateDTO dto, int userId, int videoId) {
         User user = getUserById(userId);
         Comment comment = mapper.map(dto, Comment.class);
         Optional<Video> video = videoRepository.findById(videoId);
-        if(video.isPresent()) {
-            comment.setVideo(video.get());
+        if(!video.isPresent()) {
+            throw new NotFoundException("No such video!");
         }
+        comment.setVideo(video.get());
         comment.setOwner(user);
         commentRepository.save(comment);
-        return mapper.map(comment, CommentBasicDTO.class);
+        return mapper.map(comment, CommentCreateDTO.class);
     }
 
     public CommentBasicDTO react(int userId, int commentId, int reaction) {
