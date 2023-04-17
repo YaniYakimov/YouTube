@@ -2,13 +2,13 @@ package com.youtube.youtube.model.entities;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.OneToMany;
-import java.util.HashSet;
-import java.util.Set;
+
+import java.util.*;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Setter
 @Getter
@@ -51,6 +51,8 @@ public class Video {
 
     @OneToMany(mappedBy = "video", cascade = CascadeType.ALL, orphanRemoval = true)
     Set <VideoHistory> videoHistories = new HashSet<>();
+    @OneToMany(mappedBy = "video")
+    private List<Comment> comments = new ArrayList<>();
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

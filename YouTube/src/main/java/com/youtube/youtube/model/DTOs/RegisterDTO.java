@@ -24,4 +24,6 @@ public class RegisterDTO {
     private LocalDateTime dateCreated;
     private char gender;
     private String location;
+    private String telephone;
+    private String profilePicture;
 }
