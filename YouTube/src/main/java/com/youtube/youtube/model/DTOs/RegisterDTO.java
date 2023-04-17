@@ -20,6 +20,7 @@ public class RegisterDTO {
     private String confirmPassword;
     private String firstName;
     private String lastName;
+//    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_+,.?\":{}|<>])(?=\\S+$).{8,}$", message = "Invalid date")
     private LocalDate dateOfBirth;
     private LocalDateTime dateCreated;
     private char gender;
