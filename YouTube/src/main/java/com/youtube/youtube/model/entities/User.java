@@ -37,7 +37,7 @@ public class User {
     @Column
     private String telephone;
     @Column(name = "profile_picture_url")
-    private String profileImageUrl;
+    private String profilePicture;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

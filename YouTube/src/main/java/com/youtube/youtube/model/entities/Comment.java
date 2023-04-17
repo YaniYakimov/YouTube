@@ -35,4 +35,5 @@ public class Comment {
     private Set<Comment> replies;
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CommentReaction> reactions = new HashSet<>();
+
 }

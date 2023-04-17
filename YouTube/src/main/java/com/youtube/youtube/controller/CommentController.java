@@ -34,7 +34,7 @@ public class CommentController extends AbstractController{
         return commentService.createComment(dto, userId, videoId);
     }
     @PostMapping("/comments/{id}")
-    public void subscribe(@PathVariable int commentId, HttpSession session) {
+    public void react(@PathVariable int commentId, HttpSession session) {
         int subscriberId = getLoggedId(session);
         commentService.react(subscriberId, commentId);
     }
