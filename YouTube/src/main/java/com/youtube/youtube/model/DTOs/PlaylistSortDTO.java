@@ -4,21 +4,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 
-public class PlaylistInfoDTO {
+public class PlaylistSortDTO {
     private int id;
     private UserBasicInfoDTO user;
     private String name;
     private String description;
     private int views;
     private String playlistUrl;
-    private VisibilityDTO visibility;
-    private Set<VideoWithoutOwnerDTO> videos;
-    private LocalDateTime dateCreated;
+    private List<VideoWithoutOwnerDTO> sortedVideos;
 }

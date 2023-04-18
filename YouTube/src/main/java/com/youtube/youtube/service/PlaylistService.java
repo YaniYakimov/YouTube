@@ -7,7 +7,6 @@ import com.youtube.youtube.model.entities.Video;
 import com.youtube.youtube.model.entities.Visibility;
 import com.youtube.youtube.model.exceptions.BadRequestException;
 import com.youtube.youtube.model.exceptions.NotFoundException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -90,32 +89,47 @@ public class PlaylistService extends AbstractService {
         playlistRepository.delete(playlist);
     }
 
-    public List<VideoReactionDTO> sortPlaylist(int userId, int id, SortPlaylistDTO sortData) {
+    public PlaylistSortDTO getPlaylistById(int userId, int id, SortPlaylistDTO sortData) {
         Playlist playlist=findPlaylistById(id);
         checkPlaylistOwner(playlist, userId);
+        playlist.setViews(playlist.getViews()+1);
+        playlistRepository.save(playlist);
         List<Video> videos=playlist.getVideos().stream().toList();
-        //todo validate sortData
-        String orderBy=sortData.getOrderBy();
+        SortType sortType=getSortType(sortData.getSortType());
 
-        switch (orderBy){
-            case "VIEWS":
-                Collections.sort(videos, orderByViews(videos));
-                break;
-            case "NAME":
-                Collections.sort(videos,orderByName(videos));
-                break;
+        List<VideoWithoutOwnerDTO> videosDTO= videos.stream()
+                .map( v -> mapper.map(v, VideoWithoutOwnerDTO.class))
+                .collect(Collectors.toList());
+
+        switch (sortType){
+            case VIEWS -> {
+                videosDTO.sort((v1, v2) -> Long.compare(v1.getViews(), v2.getViews()));
+            }
+            case NAME -> {
+                videosDTO.sort((v1, v2) -> v1.getName().compareTo(v2.getName()));
+            }
+            case DATE -> {
+                videosDTO.sort((v1, v2) -> v1.getDateCreated().compareTo(v2.getDateCreated()));
+            }
         }
-        if(sortData.getOrder().equals("DESCENDING")){
-            //todo
+        if(sortData.isDescOrder()){
+            Collections.reverse(videosDTO);
         }
-        return null;
+
+        PlaylistSortDTO result=mapper.map(playlist, PlaylistSortDTO.class);
+        result.setSortedVideos(videosDTO);
+        return result;
     }
 
-    private Comparator<Video> orderByViews(List <Video> videos){
-        return Comparator.comparing(video -> video.getViews());
-    }
-    private Comparator<Video> orderByName(List <Video> videos){
-        return Comparator.comparing(video -> video.getName());
+    private enum SortType {VIEWS,NAME,DATE}
+
+    private SortType getSortType(String orderBy){
+        for (int i = 0; i < SortType.values().length; i++) {
+            if(orderBy.equalsIgnoreCase(SortType.values()[i].toString())){
+                return SortType.values()[i];
+            }
+        }
+        throw new BadRequestException("Invalid sort type");
     }
 
 }

@@ -48,11 +48,10 @@ public class PlaylistController extends AbstractController{
 
     }
 
-    @PostMapping("/playlists/{id}/sort")
-    public List<VideoReactionDTO> sortPlaylist(@PathVariable int id, @RequestBody SortPlaylistDTO sortData, HttpSession s){
+    @PostMapping("/playlists/{id}")
+    public PlaylistSortDTO getPlaylistById(@PathVariable int id, @RequestBody SortPlaylistDTO sortData, HttpSession s){
         int userId=getLoggedId(s);
-        //todo playlistSort
-        return playlistService.sortPlaylist(userId, id, sortData);
+        return playlistService.getPlaylistById(userId, id, sortData);
     }
 
 }
