@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class SortPlaylistDTO {
-    private String orderBy;
-    private String order;
+    private String sortType;
+    private boolean descOrder;
 }

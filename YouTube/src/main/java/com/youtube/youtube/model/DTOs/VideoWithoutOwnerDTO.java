@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 public class VideoWithoutOwnerDTO{
     private int id;
-//    private LocalDateTime dateCreated;
+    private LocalDateTime dateCreated;
     private String name;
 //    private int visibilityId;
     private VisibilityDTO visibility;

@@ -5,6 +5,7 @@ import com.youtube.youtube.model.entities.*;
 import com.youtube.youtube.model.exceptions.NotFoundException;
 import com.youtube.youtube.model.repositories.CategoryRepository;
 import com.youtube.youtube.model.repositories.VideoReactionRepository;
+import com.youtube.youtube.model.repositories.VideoWatchRepository;
 import com.youtube.youtube.model.repositories.VisibilityRepository;
 import jakarta.transaction.Transactional;
 import lombok.SneakyThrows;
@@ -26,9 +27,16 @@ import java.util.stream.Collectors;
 public class VideoService extends AbstractService {
     @Autowired
     private VideoReactionRepository reactionRepository;
-
-    public VideoInfoDTO getVideoById(int id) {
-        Video video = findVideoById(id);
+    @Autowired
+    private VideoWatchRepository videoWatchRepository;
+    @Transactional
+    public VideoInfoDTO getVideoById(int videoId, int userId) {
+        Video video = findVideoById(videoId);
+        if(videoWatchRepository.findById(userId, videoId).isEmpty()) {
+            video.setViews(video.getViews() + 1);
+            videoRepository.save(video);
+        }
+        videoWatchRepository.save(userId, videoId);
         return mapper.map(video,VideoInfoDTO.class);
     }
 
@@ -59,7 +67,7 @@ public class VideoService extends AbstractService {
     public ResponseEntity<String> deleteVideo(int userId, int videoId) {
         Video video=findVideoById(videoId);
         checkVideoOwner(video,userId);
-        videoRepository.delete(video); //todo fix
+        videoRepository.delete(video);
         return ResponseEntity.ok("Video deleted successfully.");
     }
 
@@ -101,7 +109,7 @@ public class VideoService extends AbstractService {
         video.setDateCreated(LocalDateTime.now());
         video.setVideoUrl(url);
 
-        user.getVideos().add(video);
+//        user.getVideos().add(video);
         videoRepository.save(video);
         return mapper.map(video, VideoInfoDTO.class);
     }
