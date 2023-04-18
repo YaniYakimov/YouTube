@@ -2,8 +2,7 @@ package com.youtube.youtube.service;
 
 import com.youtube.youtube.model.DTOs.CommentBasicDTO;
 import com.youtube.youtube.model.DTOs.CommentCreateDTO;
-import com.youtube.youtube.model.DTOs.UserBasicInfoDTO;
-import com.youtube.youtube.model.DTOs.VideoReactionDTO;
+import com.youtube.youtube.model.DTOs.CommentReplyDTO;
 import com.youtube.youtube.model.entities.*;
 import com.youtube.youtube.model.exceptions.BadRequestException;
 import com.youtube.youtube.model.exceptions.NotFoundException;
@@ -21,44 +20,33 @@ import java.util.stream.Collectors;
 public class CommentService extends AbstractService{
     @Autowired
     CommentReactionRepository commentReactionRepository;
-    public List<CommentBasicDTO> sort() {
-        return commentRepository.findAll()
+    public List<CommentBasicDTO> sort(int videoId) {
+        Video video = videoRepository.findById(videoId).orElseThrow(() -> new NotFoundException(NO_SUCH_VIDEO));
+        return commentRepository.findAllByVideo(video)
                 .stream()
                 .sorted((o1, o2) -> o2.getDateCreated().compareTo(o1.getDateCreated()))
                 .map(c -> mapper.map(c, CommentBasicDTO.class))
                 .collect(Collectors.toList());
     }
-
-    public List<CommentBasicDTO> get(int videoId) {
-        Optional<Video> video = videoRepository.findById(videoId);
-        if(!video.isPresent()) {
-            throw new BadRequestException("No such video!");
-        }
-        return video.get().getComments()
+    public List<CommentReplyDTO> get(int videoId) {
+        Video video = videoRepository.findById(videoId).orElseThrow(() -> new BadRequestException(NO_SUCH_VIDEO));
+        return video.getComments()
                 .stream()
-                .map(c -> mapper.map(c, CommentBasicDTO.class))
+                .map(c -> mapper.map(c, CommentReplyDTO.class))
                 .collect(Collectors.toList());
     }
-
     public CommentCreateDTO createComment(CommentCreateDTO dto, int userId, int videoId) {
         User user = getUserById(userId);
         Comment comment = mapper.map(dto, Comment.class);
-        Optional<Video> video = videoRepository.findById(videoId);
-        if(!video.isPresent()) {
-            throw new NotFoundException("No such video!");
-        }
-        comment.setVideo(video.get());
+        Video video = videoRepository.findById(videoId).orElseThrow(() -> new NotFoundException(NO_SUCH_VIDEO));
+        comment.setVideo(video);
         comment.setOwner(user);
         commentRepository.save(comment);
         return mapper.map(comment, CommentCreateDTO.class);
     }
-
     public CommentBasicDTO react(int userId, int commentId, int reaction) {
         validReaction(reaction);
-        Optional<Comment> comment = commentRepository.findById(commentId);
-        if(!comment.isPresent()) {
-            throw new NotFoundException("No such video!");
-        }
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException(NO_SUCH_COMMENT));
         Optional<CommentReaction> existingReaction = commentReactionRepository.findById(userId, commentId);
         if(existingReaction.isPresent() && existingReaction.get().getReaction() == reaction) {
             commentReactionRepository.delete(userId, commentId);
@@ -73,46 +61,30 @@ public class CommentService extends AbstractService{
         updatedComment.setDislikes(dislikes);
         return updatedComment;
     }
-
-    public void deleteComment(int id, int loggedId) {
-        Optional<User> user = userRepository.findById(loggedId);
-        if(!user.isPresent()) {
-            throw new BadRequestException("You need to login first!");
-        }
-        Optional<Comment> comment = commentRepository.findById(id);
-        if(comment.isPresent()) {
-            commentRepository.delete(comment.get());
-        }
-        else {
-            throw new BadRequestException("No such comment!");
-        }
+    public void deleteComment(int id) {
+        Comment comment = commentRepository.findById(id).orElseThrow(() -> new BadRequestException(NO_SUCH_COMMENT));
+        commentRepository.delete(comment);
     }
-
-    public CommentBasicDTO editComment(int userId, int commentId, CommentBasicDTO editDTO) {
-        Optional<Comment> comment = commentRepository.findById(commentId);
-        if(!comment.isPresent()) {
-            throw new BadRequestException("No such comment!");
-        }
-        comment.get().setVideo(editDTO.getVideo());
-        Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) {
-            throw new UnauthorizedException("You have no permission to edit");
-        }
-        comment.get().setOwner(user.get());
-        comment.get().setContent(editDTO.getContent());
-        comment.get().setParent(editDTO.getParent());
-        comment.get().setDateCreated(LocalDateTime.now());
+    public CommentBasicDTO editComment(int userId, int commentId, CommentBasicDTO editDTO, int videoId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException(NO_SUCH_COMMENT));
+        Video video = videoRepository.findById(videoId).orElseThrow(() -> new NotFoundException(NO_SUCH_VIDEO));
+        comment.setVideo(video);
+        User user = userRepository.findById(userId).orElseThrow(() -> new UnauthorizedException("You have no permission to edit"));
+        comment.setOwner(user);
+        comment.setContent(editDTO.getContent());
+        comment.setParent(editDTO.getParent());
+        comment.setDateCreated(LocalDateTime.now());
+        commentRepository.save(comment);
         return mapper.map(comment, CommentBasicDTO.class);
     }
-
-    public CommentBasicDTO reply(CommentBasicDTO dto, int userId, int parentCommentId) {
-        Optional<Comment> parentComment = commentRepository.findById(parentCommentId);
-        if(!parentComment.isPresent()) {
-            throw new NotFoundException("No such comment");
-        }
+    public CommentReplyDTO reply(CommentReplyDTO dto, int userId, int parentCommentId) {
+        User owner = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(NO_SUCH_USER));
+        Comment parentComment = commentRepository.findById(parentCommentId).orElseThrow(() -> new NotFoundException(NO_SUCH_COMMENT));
         Comment newComment = mapper.map(dto, Comment.class);
-        newComment.setParent(parentComment.get());
+        newComment.setParent(parentComment);
+        newComment.setOwner(owner);
+        newComment.setVideo(parentComment.getVideo());
         commentRepository.save(newComment);
-        return mapper.map(newComment, CommentBasicDTO.class);
+        return mapper.map(newComment, CommentReplyDTO.class);
     }
 }

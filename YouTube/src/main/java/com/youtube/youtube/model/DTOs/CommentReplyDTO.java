@@ -6,17 +6,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor
-public class CommentCreateDTO {
+public class CommentReplyDTO {
     private UserWithoutPassDTO owner;
     private VideoInfoDTO video;
     private String content;
     private LocalDateTime dateCreated;
     private int isFixed;
-    private Comment parent;
     private int likes;
     private int dislikes;
 }
