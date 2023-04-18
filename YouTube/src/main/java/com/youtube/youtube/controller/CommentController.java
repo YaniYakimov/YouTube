@@ -15,7 +15,7 @@ public class CommentController extends AbstractController{
     @Autowired
     private CommentService commentService;
     @GetMapping("/comments/{video-id}/sort")
-    public List<CommentBasicDTO> getById(@PathVariable("video-id") int id) {
+    public List<CommentReplyDTO> getById(@PathVariable("video-id") int id) {
         return commentService.sort(id);
     }
     @GetMapping("/comments/{video-id}")

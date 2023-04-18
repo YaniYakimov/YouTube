@@ -20,12 +20,12 @@ import java.util.stream.Collectors;
 public class CommentService extends AbstractService{
     @Autowired
     CommentReactionRepository commentReactionRepository;
-    public List<CommentBasicDTO> sort(int videoId) {
+    public List<CommentReplyDTO> sort(int videoId) {
         Video video = videoRepository.findById(videoId).orElseThrow(() -> new NotFoundException(NO_SUCH_VIDEO));
         return commentRepository.findAllByVideo(video)
                 .stream()
                 .sorted((o1, o2) -> o2.getDateCreated().compareTo(o1.getDateCreated()))
-                .map(c -> mapper.map(c, CommentBasicDTO.class))
+                .map(c -> mapper.map(c, CommentReplyDTO.class))
                 .collect(Collectors.toList());
     }
     public List<CommentReplyDTO> get(int videoId) {
@@ -41,6 +41,7 @@ public class CommentService extends AbstractService{
         Video video = videoRepository.findById(videoId).orElseThrow(() -> new NotFoundException(NO_SUCH_VIDEO));
         comment.setVideo(video);
         comment.setOwner(user);
+        comment.setDateCreated(LocalDateTime.now());
         commentRepository.save(comment);
         return mapper.map(comment, CommentCreateDTO.class);
     }
@@ -74,6 +75,7 @@ public class CommentService extends AbstractService{
         comment.setContent(editDTO.getContent());
         comment.setParent(editDTO.getParent());
         comment.setDateCreated(LocalDateTime.now());
+        comment.setIsFixed(1);
         commentRepository.save(comment);
         return mapper.map(comment, CommentBasicDTO.class);
     }
@@ -84,6 +86,7 @@ public class CommentService extends AbstractService{
         newComment.setParent(parentComment);
         newComment.setOwner(owner);
         newComment.setVideo(parentComment.getVideo());
+        newComment.setDateCreated(LocalDateTime.now());
         commentRepository.save(newComment);
         return mapper.map(newComment, CommentReplyDTO.class);
     }

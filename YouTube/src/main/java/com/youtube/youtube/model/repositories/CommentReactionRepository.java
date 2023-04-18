@@ -12,8 +12,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 @Repository
 public interface CommentReactionRepository  extends JpaRepository<CommentReaction, UserReactToComment> {
-    @Query(value = "SELECT * FROM users_react_to_comments WHERE user_id = :userId AND video_id = :videoId", nativeQuery = true)
-    Optional<CommentReaction> findById(@Param("userId") int userId, @Param("videoId") int videoId);
+    @Query(value = "SELECT * FROM users_react_to_comments WHERE user_id = :userId AND comment_id = :commentId", nativeQuery = true)
+    Optional<CommentReaction> findById(@Param("userId") int userId, @Param("commentId") int commentId);
     @Modifying
     @Query(value = "DELETE FROM users_react_to_comments WHERE user_id = :userId AND comment_id = :commentId", nativeQuery = true)
     void delete(@Param("userId") int userId, @Param("commentId") int videoId);
