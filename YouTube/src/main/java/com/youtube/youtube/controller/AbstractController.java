@@ -17,6 +17,7 @@ import java.util.Map;
 public abstract class AbstractController {
     protected static final String LOGGED = "LOGGED";
     protected static final String LOGGED_ID = "LOGGED_ID";
+    public static final String YOU_HAVE_TO_LOG_IN_FIRST = "You have to logIn first!";
 
     protected int getLoggedId (HttpSession s){
         if(s.getAttribute(LOGGED) == null){

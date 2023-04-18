@@ -1,7 +1,6 @@
 package com.youtube.youtube.controller;
 
 import com.youtube.youtube.model.DTOs.*;
-import com.youtube.youtube.model.entities.User;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
 import com.youtube.youtube.service.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -34,8 +33,12 @@ public class UserController extends AbstractController{
     }
     @PostMapping("/users/sign-out")
     public ResponseEntity<String> logOut(HttpSession s) {
-        userService.logOut(s);
-        return ResponseEntity.ok("Log-out was successful.");
+        if(s.getAttribute(LOGGED_ID) == null) {
+            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
+        }
+        else {
+            return ResponseEntity.ok("Log-out was successful.");
+        }
     }
     @PostMapping("/users/search")
     public List<UserWithoutPassDTO> searchByName(@RequestBody UserBasicInfoDTO dto) {
@@ -50,7 +53,7 @@ public class UserController extends AbstractController{
     public UserWithoutPassDTO edit(@Valid @RequestBody RegisterDTO dto, HttpSession session) {
         int loggedId = getLoggedId(session);
         if(session.getAttribute(LOGGED_ID) == null) {
-            throw new UnauthorizedException("You have to logIn first!");
+            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
         }
         else {
             return userService.edit(dto, loggedId);
@@ -60,7 +63,7 @@ public class UserController extends AbstractController{
     public ResponseEntity<String> deleteAccount(HttpSession s) {
         int loggedId = getLoggedId(s);
         if(s.getAttribute(LOGGED_ID) == null) {
-            throw new UnauthorizedException("You have to logIn first!");
+            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
         }
         else {
             userService.deleteAccount(loggedId);
@@ -68,5 +71,4 @@ public class UserController extends AbstractController{
             return ResponseEntity.ok("Account deleted successfully.");
         }
     }
-    //todo proba
 }

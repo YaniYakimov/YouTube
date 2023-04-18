@@ -13,6 +13,11 @@ import java.util.Optional;
 public abstract class AbstractService {
     public static final int LIKE = 1;
     public static final int DISLIKE = -1;
+    public static final String WRONG_CREDENTIALS = "Wrong credentials";
+    public static final String NO_SUCH_USER = "No such user!";
+    public static final String NO_SUCH_COUNTRY = "No such country!";
+    public static final String NO_SUCH_COMMENT = "No such comment!";
+    public static final String NO_SUCH_VIDEO = "No such video!";
     @Autowired
     protected VideoRepository videoRepository;
     @Autowired
