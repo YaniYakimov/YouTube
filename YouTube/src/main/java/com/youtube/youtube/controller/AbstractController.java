@@ -28,6 +28,7 @@ public abstract class AbstractController {
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleBadRequest(Exception e){
+        e.printStackTrace();
         ErrorDTO errorDTO= generateErrorDTO(e, HttpStatus.BAD_REQUEST);
         errorDTO.setMsg(e.getMessage());
         return errorDTO;
@@ -36,7 +37,8 @@ public abstract class AbstractController {
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorDTO handleUnauthorized(Exception e){
-        ErrorDTO errorDTO= generateErrorDTO(e, HttpStatus.BAD_REQUEST);
+        e.printStackTrace();
+        ErrorDTO errorDTO= generateErrorDTO(e, HttpStatus.UNAUTHORIZED);
         errorDTO.setMsg(e.getMessage());
         return errorDTO;
     }
@@ -44,7 +46,8 @@ public abstract class AbstractController {
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorDTO handleNotFound(Exception e){
-        ErrorDTO errorDTO= generateErrorDTO(e, HttpStatus.BAD_REQUEST);
+        e.printStackTrace();
+        ErrorDTO errorDTO= generateErrorDTO(e, HttpStatus.NOT_FOUND);
         errorDTO.setMsg(e.getMessage());
         return errorDTO;
     }
@@ -64,7 +67,10 @@ public abstract class AbstractController {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDTO handleRest(Exception e){
-        return generateErrorDTO(e, HttpStatus.INTERNAL_SERVER_ERROR);
+        e.printStackTrace();
+        ErrorDTO errorDTO= generateErrorDTO(e, HttpStatus.INTERNAL_SERVER_ERROR);
+        errorDTO.setMsg(e.getMessage());
+        return errorDTO;
     }
 
     private ErrorDTO generateErrorDTO(Object object, HttpStatus status) {

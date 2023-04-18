@@ -30,7 +30,8 @@ public class PlaylistController extends AbstractController{
     @PutMapping("/playlists/{id}/videos")
     public ResponseEntity<String> addVideoToPlaylist(@PathVariable ("id") int playlistId,@RequestBody int videoId, HttpSession s ){
         int userId=getLoggedId(s);
-        return playlistService.addVideoToPlaylist(userId, playlistId, videoId);
+        String result=playlistService.addVideoToPlaylist(userId, playlistId, videoId);
+        return ResponseEntity.ok(result);
     }
 
     @PutMapping("/playlists/{id}")
@@ -42,7 +43,8 @@ public class PlaylistController extends AbstractController{
     @DeleteMapping("/playlists/{id}")
     public ResponseEntity<String> deletePlaylist(@PathVariable ("id") int playlistId, HttpSession s){
         int userId=getLoggedId(s);
-        return playlistService.deletePlaylist(userId, playlistId);
+        playlistService.deletePlaylist(userId, playlistId);
+        return ResponseEntity.ok("Playlist deleted successfully.");
 
     }
 

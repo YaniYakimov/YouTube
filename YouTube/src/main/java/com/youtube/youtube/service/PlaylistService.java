@@ -7,15 +7,13 @@ import com.youtube.youtube.model.entities.Video;
 import com.youtube.youtube.model.entities.Visibility;
 import com.youtube.youtube.model.exceptions.BadRequestException;
 import com.youtube.youtube.model.exceptions.NotFoundException;
-import com.youtube.youtube.model.repositories.PlaylistRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +34,7 @@ public class PlaylistService extends AbstractService {
         playlist.setViews(0);
         String playlistUrl = createData.getName().replaceAll("\\s+", "-").toLowerCase() + "-" + System.currentTimeMillis();
         playlist.setPlaylistUrl(playlistUrl);
-//        user.getPlaylists().add(playlist);
+        playlist.setDateCreated(LocalDateTime.now());
         playlistRepository.save(playlist);
         return mapper.map(playlist, PlaylistInfoDTO.class);
 
@@ -55,13 +53,13 @@ public class PlaylistService extends AbstractService {
         return userPlaylistsDTO;
     }
 
-    public ResponseEntity<String> addVideoToPlaylist(int userId, int playlistId, int videoId) {
+    public String addVideoToPlaylist(int userId, int playlistId, int videoId) {
         Playlist playlist=findPlaylistById(playlistId);
         Video video=findVideoById(videoId);
         checkPlaylistOwner(playlist, userId);
         playlist.getVideos().add(video);
         playlistRepository.save(playlist);
-        return ResponseEntity.ok("Video added to playlist "+playlist.getName());
+        return "Video added to playlist "+playlist.getName();
     }
 
     public PlaylistInfoDTO editPlaylist(int userId, int playlistId, CreatePlaylistDTO editData) {
@@ -86,11 +84,10 @@ public class PlaylistService extends AbstractService {
                 .collect(Collectors.toList());
     }
 
-    public ResponseEntity<String> deletePlaylist(int userId, int playlistId) {
+    public void deletePlaylist(int userId, int playlistId) {
         Playlist playlist=findPlaylistById(playlistId);
         checkPlaylistOwner(playlist, userId);
         playlistRepository.delete(playlist);
-        return ResponseEntity.ok("Playlist deleted successfully.");
     }
 
     public List<VideoReactionDTO> sortPlaylist(int userId, int id, SortPlaylistDTO sortData) {

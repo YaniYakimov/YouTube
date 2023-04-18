@@ -25,8 +25,9 @@ public class VideoController extends AbstractController{
 
     }
     @GetMapping("/videos/{id}")
-    public VideoInfoDTO getVideoById(@PathVariable int id){
-        return videoService.getVideoById(id);
+    public VideoInfoDTO getVideoById(@PathVariable ("id") int videoId, HttpSession s){
+        int userId=getLoggedId(s);
+        return videoService.getVideoById(videoId, userId);
     }
 
     @PostMapping("/videos")

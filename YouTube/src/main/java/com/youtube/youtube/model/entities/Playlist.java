@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -26,6 +27,8 @@ public class Playlist {
     private int views;
     @Column(name = "playlist_url")
     private String playlistUrl;
+    @Column(name="date_created")
+    private LocalDateTime dateCreated;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "visibility_id",nullable = false)
