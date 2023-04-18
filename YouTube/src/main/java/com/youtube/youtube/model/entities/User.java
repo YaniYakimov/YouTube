@@ -46,16 +46,16 @@ public class User {
     private Set<User> subscribers = new HashSet<>();
     @ManyToMany(mappedBy = "subscribers")
     private Set<User> subscribedTo = new HashSet<>();
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user")
     private Set<CommentReaction> commentReactions = new HashSet<>();
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user")
     private Set<VideoReaction> videoReactions = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user")
     private Set<Video> videos = new HashSet<>();
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user")
     private Set<Playlist> playlists = new HashSet<>();
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user")
     Set <VideoHistory> videoHistories = new HashSet<>();
     @OneToMany(mappedBy = "owner")
     private List<Comment> comments = new ArrayList<>();

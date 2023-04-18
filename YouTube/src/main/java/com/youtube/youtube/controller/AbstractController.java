@@ -1,13 +1,15 @@
 package com.youtube.youtube.controller;
 
 import com.youtube.youtube.model.DTOs.ErrorDTO;
+import com.youtube.youtube.model.exceptions.BadRequestException;
+import com.youtube.youtube.model.exceptions.NotFoundException;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
+import org.springframework.web.bind.annotation.ResponseStatus;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +24,32 @@ public abstract class AbstractController {
         }
         return (int) s.getAttribute(LOGGED_ID);
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDTO handleBadRequest(Exception e){
+        ErrorDTO errorDTO= generateErrorDTO(e, HttpStatus.BAD_REQUEST);
+        errorDTO.setMsg(e.getMessage());
+        return errorDTO;
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorDTO handleUnauthorized(Exception e){
+        ErrorDTO errorDTO= generateErrorDTO(e, HttpStatus.BAD_REQUEST);
+        errorDTO.setMsg(e.getMessage());
+        return errorDTO;
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorDTO handleNotFound(Exception e){
+        ErrorDTO errorDTO= generateErrorDTO(e, HttpStatus.BAD_REQUEST);
+        errorDTO.setMsg(e.getMessage());
+        return errorDTO;
+    }
+
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorDTO handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -31,6 +59,12 @@ public abstract class AbstractController {
             errors.put(fieldName, errorMessage);
         });
         return generateErrorDTO(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorDTO handleRest(Exception e){
+        return generateErrorDTO(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private ErrorDTO generateErrorDTO(Object object, HttpStatus status) {

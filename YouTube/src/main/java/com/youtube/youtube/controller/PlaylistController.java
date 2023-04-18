@@ -4,6 +4,7 @@ import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.service.PlaylistService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class PlaylistController extends AbstractController{
     }
 
     @PutMapping("/playlists/{id}/videos")
-    public String addVideoToPlaylist(@PathVariable ("id") int playlistId,@RequestBody int videoId, HttpSession s ){
+    public ResponseEntity<String> addVideoToPlaylist(@PathVariable ("id") int playlistId,@RequestBody int videoId, HttpSession s ){
         int userId=getLoggedId(s);
         return playlistService.addVideoToPlaylist(userId, playlistId, videoId);
     }
@@ -39,11 +40,17 @@ public class PlaylistController extends AbstractController{
     }
 
     @DeleteMapping("/playlists/{id}")
-    public void deletePlaylist(@PathVariable ("id") int playlistId, HttpSession s){
+    public ResponseEntity<String> deletePlaylist(@PathVariable ("id") int playlistId, HttpSession s){
         int userId=getLoggedId(s);
-        //todo playlistService.deletePlaylist(userId, playlistId);
+        return playlistService.deletePlaylist(userId, playlistId);
 
     }
 
-    //todo playlistSort
+    @PostMapping("/playlists/{id}/sort")
+    public List<VideoReactionDTO> sortPlaylist(@PathVariable int id, @RequestBody SortPlaylistDTO sortData, HttpSession s){
+        int userId=getLoggedId(s);
+        //todo playlistSort
+        return playlistService.sortPlaylist(userId, id, sortData);
+    }
+
 }

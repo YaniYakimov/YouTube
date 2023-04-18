@@ -9,8 +9,11 @@ import com.youtube.youtube.model.exceptions.BadRequestException;
 import com.youtube.youtube.model.exceptions.NotFoundException;
 import com.youtube.youtube.model.repositories.PlaylistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -52,13 +55,13 @@ public class PlaylistService extends AbstractService {
         return userPlaylistsDTO;
     }
 
-    public String addVideoToPlaylist(int userId, int playlistId, int videoId) {
+    public ResponseEntity<String> addVideoToPlaylist(int userId, int playlistId, int videoId) {
         Playlist playlist=findPlaylistById(playlistId);
         Video video=findVideoById(videoId);
         checkPlaylistOwner(playlist, userId);
         playlist.getVideos().add(video);
         playlistRepository.save(playlist);
-        return "Video added to playlist "+playlist.getName();
+        return ResponseEntity.ok("Video added to playlist "+playlist.getName());
     }
 
     public PlaylistInfoDTO editPlaylist(int userId, int playlistId, CreatePlaylistDTO editData) {
@@ -82,4 +85,40 @@ public class PlaylistService extends AbstractService {
                 .map(p -> mapper.map(p, SearchPlayListDTO.class))
                 .collect(Collectors.toList());
     }
+
+    public ResponseEntity<String> deletePlaylist(int userId, int playlistId) {
+        Playlist playlist=findPlaylistById(playlistId);
+        checkPlaylistOwner(playlist, userId);
+        playlistRepository.delete(playlist);
+        return ResponseEntity.ok("Playlist deleted successfully.");
+    }
+
+    public List<VideoReactionDTO> sortPlaylist(int userId, int id, SortPlaylistDTO sortData) {
+        Playlist playlist=findPlaylistById(id);
+        checkPlaylistOwner(playlist, userId);
+        List<Video> videos=playlist.getVideos().stream().toList();
+        //todo validate sortData
+        String orderBy=sortData.getOrderBy();
+
+        switch (orderBy){
+            case "VIEWS":
+                Collections.sort(videos, orderByViews(videos));
+                break;
+            case "NAME":
+                Collections.sort(videos,orderByName(videos));
+                break;
+        }
+        if(sortData.getOrder().equals("DESCENDING")){
+            //todo
+        }
+        return null;
+    }
+
+    private Comparator<Video> orderByViews(List <Video> videos){
+        return Comparator.comparing(video -> video.getViews());
+    }
+    private Comparator<Video> orderByName(List <Video> videos){
+        return Comparator.comparing(video -> video.getName());
+    }
+
 }

@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,9 +57,9 @@ public class VideoController extends AbstractController{
     }
 
     @DeleteMapping("/videos/{id}")
-    public void deleteVideo(@PathVariable ("id") int videoId, HttpSession s){
+    public ResponseEntity<String> deleteVideo(@PathVariable ("id") int videoId, HttpSession s){
         int userId=getLoggedId(s);
-        videoService.deleteVideo(userId, videoId);
+        return videoService.deleteVideo(userId, videoId);
     }
 
     @SneakyThrows

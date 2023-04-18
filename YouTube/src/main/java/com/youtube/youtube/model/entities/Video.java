@@ -37,7 +37,7 @@ public class Video {
 //    @Column(name = "visibility_id")
 //    private int visibilityId;
 
-    @OneToMany(mappedBy = "video", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "video")
     private Set<VideoReaction> reactions = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,7 +49,7 @@ public class Video {
     @ManyToMany(mappedBy = "videos")
     private Set<Playlist> playlists = new HashSet<>();
 
-    @OneToMany(mappedBy = "video", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "video")
     Set <VideoHistory> videoHistories = new HashSet<>();
     @OneToMany(mappedBy = "video")
     private List<Comment> comments = new ArrayList<>();

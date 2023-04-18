@@ -9,6 +9,7 @@ import com.youtube.youtube.model.repositories.VisibilityRepository;
 import jakarta.transaction.Transactional;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.io.FilenameUtils;
@@ -36,7 +37,6 @@ public class VideoService extends AbstractService {
         if(videos.isEmpty()){
             throw new NotFoundException("There is no video with searched name.");
         }
-        //TODO check video mapping
         return videos.stream()
                 .map(v -> mapper.map(v, SearchVideoDTO.class))
                 .collect(Collectors.toList());
@@ -53,15 +53,14 @@ public class VideoService extends AbstractService {
         video.setVisibility(findVisibility(editData.getVisibilityId()));
         video.setCategory(findCategory(editData.getCategoryId()));
 
-        //TODO check video mapping
         return mapper.map(video, VideoInfoDTO.class);
     }
 
-    public void deleteVideo(int userId, int videoId) {
+    public ResponseEntity<String> deleteVideo(int userId, int videoId) {
         Video video=findVideoById(videoId);
         checkVideoOwner(video,userId);
-        videoRepository.deleteById(videoId);
-
+        videoRepository.delete(video); //todo fix
+        return ResponseEntity.ok("Video deleted successfully.");
     }
 
     public UserVideosDTO getUserVideos(int userId) {

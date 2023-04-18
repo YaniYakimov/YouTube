@@ -33,7 +33,7 @@ public class Comment {
 
     @OneToMany(mappedBy = "parent")
     private Set<Comment> replies;
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "comment")
     private Set<CommentReaction> reactions = new HashSet<>();
 
 }
