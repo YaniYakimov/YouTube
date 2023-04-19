@@ -17,4 +17,5 @@ public class CommentReplyDTO {
     private int isFixed;
     private int likes;
     private int dislikes;
+    private CommentReplyDTO parent;
 }

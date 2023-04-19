@@ -25,7 +25,8 @@ public class UserController extends AbstractController{
     }
     @PostMapping("/users")
     public UserWithoutPassDTO register(@Valid @RequestBody RegisterDTO dto) {
-        mailSender.sendEmail("qniqkimov@gmail.com", "Welcome", "Cheers, you just got registered");
+        Thread mail = new Thread(() -> mailSender.sendEmail("qniqkimov@gmail.com", "Welcome", "Cheers, you just got registered"));
+        mail.start();
         return userService.register(dto);
     }
     @PostMapping("/users/sign-in")
