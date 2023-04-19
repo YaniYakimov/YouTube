@@ -4,12 +4,12 @@ import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.service.VideoService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
@@ -52,7 +52,7 @@ public class VideoController extends AbstractController{
     }
 
     @PutMapping("/videos/{id}")
-    public VideoInfoDTO editVideo(@PathVariable ("id") int videoId, @RequestBody EditVideoDTO editData, HttpSession s){
+    public VideoInfoDTO editVideo(@PathVariable ("id") int videoId, @Valid @RequestBody EditVideoDTO editData, HttpSession s){
         int userId=getLoggedId(s);
         return videoService.editVideo(userId, videoId, editData);
     }
@@ -69,7 +69,5 @@ public class VideoController extends AbstractController{
         File f = videoService.download(fileName);
         Files.copy(f.toPath(), resp.getOutputStream());
     }
-
-
 
 }

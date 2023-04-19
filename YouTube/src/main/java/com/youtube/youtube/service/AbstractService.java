@@ -20,6 +20,10 @@ public abstract class AbstractService {
     public static final String NO_SUCH_VIDEO = "No such video!";
     public static final String UPLOADS = "uploads";
     public static final long MAX_VIDEO_SIZE = 256L*1024*1024;
+    public static final int MAX_TITLE_LENGTH =70;
+    public static final int MAX_DESCRIPTION_LENGTH =5000;
+    public static final String TITLE_TOO_LONG = "The title is too long. Maximum title length is "+MAX_TITLE_LENGTH+" characters.";
+    public static final String DESCRIPTION_TOO_LONG = "The description is too long. Maximum description length is "+MAX_DESCRIPTION_LENGTH+" characters.";
     @Autowired
     protected VideoRepository videoRepository;
     @Autowired

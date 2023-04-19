@@ -4,10 +4,8 @@ import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.model.entities.*;
 import com.youtube.youtube.model.exceptions.BadRequestException;
 import com.youtube.youtube.model.exceptions.NotFoundException;
-import com.youtube.youtube.model.repositories.CategoryRepository;
 import com.youtube.youtube.model.repositories.VideoReactionRepository;
 import com.youtube.youtube.model.repositories.VideoWatchRepository;
-import com.youtube.youtube.model.repositories.VisibilityRepository;
 import jakarta.transaction.Transactional;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +29,8 @@ public class VideoService extends AbstractService {
     private VideoReactionRepository reactionRepository;
     @Autowired
     private VideoWatchRepository videoWatchRepository;
+    private static String[] allowedVideoFormats = {"video/mp4", "video/mpeg", "video/webm",
+                        "video/quicktime", "video/x-msvideo", "video/x-flv", "video/3gpp"};
     @Transactional
     public VideoInfoDTO getVideoById(int videoId, int userId) {
         Video video = findVideoById(videoId);
@@ -54,10 +54,7 @@ public class VideoService extends AbstractService {
 
     public VideoInfoDTO editVideo(int userId, int videoId, EditVideoDTO editData) {
         Video video=findVideoById(videoId);
-
         checkVideoOwner(video,userId);
-        //TODO check edit data
-//        mapper.map(editData, video);
         video.setName(editData.getName());
         video.setDescription(editData.getDescription());
         video.setVisibility(findVisibility(editData.getVisibilityId()));
@@ -82,25 +79,13 @@ public class VideoService extends AbstractService {
     }
 
 
-    private static String[] allowedVideoFormats = {"video/mp4", "video/mpeg", "video/webm", "video/quicktime", "video/x-msvideo", "video/x-flv", "video/3gpp"};
-    @SneakyThrows
-    public VideoInfoDTO uploadVideo(MultipartFile file, String name, String description, int visibilityId,
-                                    int categoryId, int userId) {
-        //todo validate info
-        if (file.isEmpty()) {
-            throw new BadRequestException("The file is not attached.");
-        }
-//        if (!file.getContentType().equals("video/mp4")) {
-//            throw new BadRequestException("Invalid file format. Only MP4 files are allowed.");
-//        }
-        System.out.println(file.getContentType());
-        if (!Arrays.asList(allowedVideoFormats).contains(file.getContentType())) {
-            throw new BadRequestException("Invalid file format. Only video files are allowed.");
-        }
-        if (file.getSize() > MAX_VIDEO_SIZE) {
-            throw new BadRequestException("File is too large. Maximum file size is 256 GB.");
-        }
 
+    @SneakyThrows
+    public VideoInfoDTO uploadVideo(MultipartFile file, String name, String description,
+                                    int visibilityId, int categoryId, int userId) {
+        validUploadData(file, name, description);
+        Visibility visibility=findVisibility(visibilityId);
+        Category category= findCategory(categoryId);
         String ext = FilenameUtils.getExtension(file.getOriginalFilename());
         String fileName = UUID.randomUUID().toString() + "."+ext;
         File dir = new File(UPLOADS);
@@ -114,9 +99,7 @@ public class VideoService extends AbstractService {
         Video video=new Video();
         video.setName(name);
         video.setDescription(description);
-        Visibility visibility=findVisibility(visibilityId);
         video.setVisibility(visibility);
-        Category category= findCategory(categoryId);
         video.setCategory(category);
         video.setUser(user);
         video.setDateCreated(LocalDateTime.now());
@@ -156,4 +139,22 @@ public class VideoService extends AbstractService {
     }
 
 
+    private void validUploadData(MultipartFile file, String name, String description){
+        if (file.isEmpty()) {
+            throw new BadRequestException("The file is not attached. Please try again.");
+        }
+        System.out.println(file.getContentType());
+        if (!Arrays.asList(allowedVideoFormats).contains(file.getContentType())) {
+            throw new BadRequestException("Invalid file format. Only video files are allowed.");
+        }
+        if (file.getSize() > MAX_VIDEO_SIZE) {
+            throw new BadRequestException("File is too large. Maximum file size is 256 GB.");
+        }
+        if(name.length()> MAX_TITLE_LENGTH){
+            throw new BadRequestException(TITLE_TOO_LONG);
+        }
+        if(description.length()> MAX_DESCRIPTION_LENGTH){
+            throw new BadRequestException(DESCRIPTION_TOO_LONG);
+        }
+    }
 }

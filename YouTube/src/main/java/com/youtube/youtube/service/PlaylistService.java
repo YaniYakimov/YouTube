@@ -21,7 +21,6 @@ public class PlaylistService extends AbstractService {
     public PlaylistInfoDTO createPlaylist(int userId, CreatePlaylistDTO createData) {
         Playlist playlist = new Playlist();
         User user = getUserById(userId);
-        //todo validate data
         if(playlistRepository.findByNameAndUser(createData.getName(), user).isPresent()){
             throw new BadRequestException("Playlist with this name already exists. Please choose another name.");
         }
@@ -36,7 +35,6 @@ public class PlaylistService extends AbstractService {
         playlist.setDateCreated(LocalDateTime.now());
         playlistRepository.save(playlist);
         return mapper.map(playlist, PlaylistInfoDTO.class);
-
     }
 
     public UserPlaylistsDTO getUserPlaylists(int userId) {
@@ -73,7 +71,7 @@ public class PlaylistService extends AbstractService {
         return mapper.map(playlist, PlaylistInfoDTO.class);
     }
 
-    public List<SearchPlayListDTO> searchPlaylist(CreatePlaylistDTO searchData) {
+    public List<SearchPlayListDTO> searchPlaylist(PlaylistInfoDTO searchData) {
         List<Playlist> result = playlistRepository.findAllByName(searchData.getName());
         if(result.isEmpty()) {
             throw new NotFoundException("There is no playlist with searched name.");

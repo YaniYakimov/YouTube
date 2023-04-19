@@ -3,10 +3,10 @@ package com.youtube.youtube.controller;
 import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.service.PlaylistService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -18,12 +18,12 @@ public class PlaylistController extends AbstractController{
         return playlistService.getUserPlaylists(id);
     }
     @PostMapping("/playlists")
-    public PlaylistInfoDTO createPlaylist(@RequestBody CreatePlaylistDTO createData, HttpSession s){
+    public PlaylistInfoDTO createPlaylist(@Valid @RequestBody CreatePlaylistDTO createData, HttpSession s){
         int userId=getLoggedId(s);
         return playlistService.createPlaylist(userId, createData);
     }
     @PostMapping("/playlists/search")
-    public List<SearchPlayListDTO> searchPlaylist(@RequestBody CreatePlaylistDTO searchData){
+    public List<SearchPlayListDTO> searchPlaylist(@RequestBody PlaylistInfoDTO searchData){
         return playlistService.searchPlaylist(searchData);
     }
 
