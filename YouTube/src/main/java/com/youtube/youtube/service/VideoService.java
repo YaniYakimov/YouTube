@@ -2,6 +2,7 @@ package com.youtube.youtube.service;
 
 import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.model.entities.*;
+import com.youtube.youtube.model.exceptions.BadRequestException;
 import com.youtube.youtube.model.exceptions.NotFoundException;
 import com.youtube.youtube.model.repositories.CategoryRepository;
 import com.youtube.youtube.model.repositories.VideoReactionRepository;
@@ -18,6 +19,7 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -80,36 +82,44 @@ public class VideoService extends AbstractService {
     }
 
 
-
+    private static String[] allowedVideoFormats = {"video/mp4", "video/mpeg", "video/webm", "video/quicktime", "video/x-msvideo", "video/x-flv", "video/3gpp"};
     @SneakyThrows
-    public VideoInfoDTO uploadVideo(MultipartFile file, String name, String description, int visibilityId, int categoryId, int userId) {
+    public VideoInfoDTO uploadVideo(MultipartFile file, String name, String description, int visibilityId,
+                                    int categoryId, int userId) {
         //todo validate info
+        if (file.isEmpty()) {
+            throw new BadRequestException("The file is not attached.");
+        }
+//        if (!file.getContentType().equals("video/mp4")) {
+//            throw new BadRequestException("Invalid file format. Only MP4 files are allowed.");
+//        }
+        if (!Arrays.asList(allowedVideoFormats).contains(file.getContentType())) {
+            throw new BadRequestException("Invalid file format. Only MP4 files are allowed.");
+        }
+        if (file.getSize() > MAX_VIDEO_SIZE) {
+            throw new BadRequestException("File is too large. Maximum file size is 256 GB.");
+        }
+
         String ext = FilenameUtils.getExtension(file.getOriginalFilename());
         String fileName = UUID.randomUUID().toString() + "."+ext;
-        File dir = new File("uploads");
+        File dir = new File(UPLOADS);
         if(!dir.exists()){
             dir.mkdirs();
         }
         File f = new File(dir, fileName);
         Files.copy(file.getInputStream(), f.toPath());
         String url = dir.getName() + File.separator + f.getName();
-
         User user = getUserById(userId);
         Video video=new Video();
         video.setName(name);
         video.setDescription(description);
-
         Visibility visibility=findVisibility(visibilityId);
         video.setVisibility(visibility);
-
         Category category= findCategory(categoryId);
         video.setCategory(category);
-
         video.setUser(user);
         video.setDateCreated(LocalDateTime.now());
         video.setVideoUrl(url);
-
-//        user.getVideos().add(video);
         videoRepository.save(video);
         return mapper.map(video, VideoInfoDTO.class);
     }
@@ -136,7 +146,7 @@ public class VideoService extends AbstractService {
     }
 
     public File download(String fileName) {
-        File dir = new File("uploads");
+        File dir = new File(UPLOADS);
         File f = new File(dir, fileName);
         if(f.exists()){
             return f;

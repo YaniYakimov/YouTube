@@ -18,6 +18,8 @@ public abstract class AbstractService {
     public static final String NO_SUCH_COUNTRY = "No such country!";
     public static final String NO_SUCH_COMMENT = "No such comment!";
     public static final String NO_SUCH_VIDEO = "No such video!";
+    public static final String UPLOADS = "uploads";
+    public static final long MAX_VIDEO_SIZE = 256L*1024*1024;
     @Autowired
     protected VideoRepository videoRepository;
     @Autowired
@@ -35,12 +37,12 @@ public abstract class AbstractService {
     @Autowired
     protected PlaylistRepository playlistRepository;
     protected User getUserById(int id) {
-        return  userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
+        return  userRepository.findById(id).orElseThrow(() -> new NotFoundException(NO_SUCH_USER));
     }
     protected Video findVideoById(int id){
         Optional<Video> opt = videoRepository.findById(id);
         if(opt.isEmpty()){
-            throw new NotFoundException("Video not found.");
+            throw new NotFoundException(NO_SUCH_VIDEO);
         }
         return opt.get();
     }
@@ -58,21 +60,21 @@ public abstract class AbstractService {
             case DISLIKE:
                 return true;
             default:
-                throw new NotFoundException("There is no such reaction");
+                throw new NotFoundException("No such reaction!");
         }
     }
 
     protected Visibility findVisibility(int visibilityId){
         Optional<Visibility> opt =visibilityRepository.findById(visibilityId);
         if(opt.isEmpty()){
-            throw new NotFoundException("There is no such visibility option.");
+            throw new NotFoundException("No such visibility option!");
         }
         return opt.get();
     }
     protected Category findCategory(int categoryId){
         Optional<Category> opt =categoryRepository.findById(categoryId);
         if(opt.isEmpty()){
-            throw new NotFoundException("There is no such category option.");
+            throw new NotFoundException("No such category option!");
         }
         return opt.get();
     }

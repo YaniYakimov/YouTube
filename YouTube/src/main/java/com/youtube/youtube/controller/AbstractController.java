@@ -21,7 +21,7 @@ public abstract class AbstractController {
 
     protected int getLoggedId (HttpSession s){
         if(s.getAttribute(LOGGED) == null){
-            throw new UnauthorizedException("You have to login first.");
+            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
         }
         return (int) s.getAttribute(LOGGED_ID);
     }
