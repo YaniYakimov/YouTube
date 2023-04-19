@@ -62,7 +62,7 @@ public class VideoService extends AbstractService {
         video.setDescription(editData.getDescription());
         video.setVisibility(findVisibility(editData.getVisibilityId()));
         video.setCategory(findCategory(editData.getCategoryId()));
-
+        videoRepository.save(video);
         return mapper.map(video, VideoInfoDTO.class);
     }
 
@@ -93,8 +93,9 @@ public class VideoService extends AbstractService {
 //        if (!file.getContentType().equals("video/mp4")) {
 //            throw new BadRequestException("Invalid file format. Only MP4 files are allowed.");
 //        }
+        System.out.println(file.getContentType());
         if (!Arrays.asList(allowedVideoFormats).contains(file.getContentType())) {
-            throw new BadRequestException("Invalid file format. Only MP4 files are allowed.");
+            throw new BadRequestException("Invalid file format. Only video files are allowed.");
         }
         if (file.getSize() > MAX_VIDEO_SIZE) {
             throw new BadRequestException("File is too large. Maximum file size is 256 GB.");
@@ -153,11 +154,6 @@ public class VideoService extends AbstractService {
         }
         throw new NotFoundException("File not found.");
     }
-
-
-
-
-
 
 
 }
