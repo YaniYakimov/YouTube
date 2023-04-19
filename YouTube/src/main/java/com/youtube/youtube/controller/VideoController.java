@@ -4,12 +4,12 @@ import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
 import com.youtube.youtube.service.VideoService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
@@ -61,7 +61,7 @@ public class VideoController extends AbstractController{
     }
 
     @PutMapping("/videos/{id}")
-    public VideoInfoDTO editVideo(@PathVariable ("id") int videoId, @RequestBody EditVideoDTO editData, @RequestHeader("Authorization") String authHeader){
+    public VideoInfoDTO editVideo(@PathVariable ("id") int videoId, @Valid @RequestBody EditVideoDTO editData, @RequestHeader("Authorization") String authHeader){
         int loggedId = getUserId(authHeader);
         if(loggedId == 0) {
             throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
@@ -84,7 +84,5 @@ public class VideoController extends AbstractController{
         File f = videoService.download(fileName);
         Files.copy(f.toPath(), resp.getOutputStream());
     }
-
-
 
 }

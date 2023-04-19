@@ -4,10 +4,10 @@ import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
 import com.youtube.youtube.service.PlaylistService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -19,7 +19,8 @@ public class PlaylistController extends AbstractController{
         return playlistService.getUserPlaylists(id);
     }
     @PostMapping("/playlists")
-    public PlaylistInfoDTO createPlaylist(@RequestBody CreatePlaylistDTO createData, @RequestHeader("Authorization") String authHeader){
+
+    public PlaylistInfoDTO createPlaylist(@Valid @RequestBody CreatePlaylistDTO createData, @RequestHeader("Authorization") String authHeader){
         int loggedId = getUserId(authHeader);
         if(loggedId == 0) {
             throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
@@ -27,7 +28,7 @@ public class PlaylistController extends AbstractController{
         return playlistService.createPlaylist(loggedId, createData);
     }
     @PostMapping("/playlists/search")
-    public List<SearchPlayListDTO> searchPlaylist(@RequestBody CreatePlaylistDTO searchData){
+    public List<SearchPlayListDTO> searchPlaylist(@RequestBody PlaylistInfoDTO searchData){
         return playlistService.searchPlaylist(searchData);
     }
 
