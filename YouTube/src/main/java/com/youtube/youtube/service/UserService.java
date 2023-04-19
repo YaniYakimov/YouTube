@@ -75,10 +75,10 @@ public class UserService extends AbstractService{
         Location location = locationRepository.findByCountry(dto.getLocation()).orElseThrow(() -> new BadRequestException(NO_SUCH_COUNTRY));
         User u = user;
         u.setLocation(location);
-        u.setPassword(dto.getPassword());
+        u.setPassword(encoder.encode(dto.getPassword()));
         u.setEmail(dto.getEmail());
         u.setGender(dto.getGender());
-        u.setDateCreated(dto.getDateCreated());
+        u.setDateCreated(u.getDateCreated());
         u.setFirstName(dto.getFirstName());
         u.setLastName(dto.getLastName());
         u.setDateOfBirth(dto.getDateOfBirth());
