@@ -1,11 +1,14 @@
 package com.youtube.youtube.controller;
 
+import com.youtube.youtube.JwtUtil;
 import com.youtube.youtube.model.DTOs.ErrorDTO;
 import com.youtube.youtube.model.exceptions.BadRequestException;
 import com.youtube.youtube.model.exceptions.NotFoundException;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,12 +21,33 @@ public abstract class AbstractController {
     protected static final String LOGGED = "LOGGED";
     protected static final String LOGGED_ID = "LOGGED_ID";
     public static final String YOU_HAVE_TO_LOG_IN_FIRST = "You have to logIn first!";
+    @Autowired
+    protected JwtUtil jwtUtils;
 
     protected int getLoggedId (HttpSession s){
         if(s.getAttribute(LOGGED) == null){
             throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
         }
         return (int) s.getAttribute(LOGGED_ID);
+    }
+    protected int getUserId(String authHeader) {
+        int userId = 0;
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            if (jwtUtils.validateToken(token)) {
+                userId = jwtUtils.getUserIdFromToken(token);
+            }
+        }
+        return userId;
+    }
+    protected void addToBlacklist(String authHeader, String body) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            if (jwtUtils.validateToken(token)) {
+                jwtUtils.addToBlacklist(token);
+                ResponseEntity.ok(body);
+            }
+        }
     }
 
     @ExceptionHandler(BadRequestException.class)

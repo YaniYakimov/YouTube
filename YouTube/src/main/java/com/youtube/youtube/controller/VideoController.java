@@ -1,9 +1,9 @@
 package com.youtube.youtube.controller;
 
 import com.youtube.youtube.model.DTOs.*;
+import com.youtube.youtube.model.exceptions.UnauthorizedException;
 import com.youtube.youtube.service.VideoService;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,19 +25,25 @@ public class VideoController extends AbstractController{
 
     }
     @GetMapping("/videos/{id}")
-    public VideoInfoDTO getVideoById(@PathVariable ("id") int videoId, HttpSession s){
-        int userId=getLoggedId(s);
-        return videoService.getVideoById(videoId, userId);
+    public VideoInfoDTO getVideoById(@PathVariable ("id") int videoId, @RequestHeader("Authorization") String authHeader){
+        int loggedId = getUserId(authHeader);
+        if(loggedId == 0) {
+            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
+        }
+        return videoService.getVideoById(videoId, loggedId);
     }
 
     @PostMapping("/videos")
     public VideoInfoDTO uploadVideo(@RequestParam ("file") MultipartFile file, @RequestParam("name") String name,
                                     @RequestParam("description") String description, @RequestParam("visibilityId") int visibilityId,
-                                    @RequestParam("categoryId") int categoryId, HttpSession s){
+                                    @RequestParam("categoryId") int categoryId, @RequestHeader("Authorization") String authHeader){
         //todo fix temp file bug
         System.out.println("Start uploading");
-        int userId=getLoggedId(s);
-        return videoService.uploadVideo(file,name,description,visibilityId,categoryId, userId);
+        int loggedId = getUserId(authHeader);
+        if(loggedId == 0) {
+            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
+        }
+        return videoService.uploadVideo(file,name,description,visibilityId,categoryId, loggedId);
     }
 
     @PostMapping("/videos/search")
@@ -46,21 +52,30 @@ public class VideoController extends AbstractController{
     }
 
     @PostMapping("/videos/{id}/reaction")
-    public VideoReactionDTO reactToVideo(@PathVariable ("id") int videoId, @RequestBody Integer reaction, HttpSession s){
-        int userId=getLoggedId(s);
-        return videoService.reactToVideo(userId, videoId, reaction);
+    public VideoReactionDTO reactToVideo(@PathVariable ("id") int videoId, @RequestBody Integer reaction, @RequestHeader("Authorization") String authHeader){
+        int loggedId = getUserId(authHeader);
+        if(loggedId == 0) {
+            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
+        }
+        return videoService.reactToVideo(loggedId, videoId, reaction);
     }
 
     @PutMapping("/videos/{id}")
-    public VideoInfoDTO editVideo(@PathVariable ("id") int videoId, @RequestBody EditVideoDTO editData, HttpSession s){
-        int userId=getLoggedId(s);
-        return videoService.editVideo(userId, videoId, editData);
+    public VideoInfoDTO editVideo(@PathVariable ("id") int videoId, @RequestBody EditVideoDTO editData, @RequestHeader("Authorization") String authHeader){
+        int loggedId = getUserId(authHeader);
+        if(loggedId == 0) {
+            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
+        }
+        return videoService.editVideo(loggedId, videoId, editData);
     }
 
     @DeleteMapping("/videos/{id}")
-    public ResponseEntity<String> deleteVideo(@PathVariable ("id") int videoId, HttpSession s){
-        int userId=getLoggedId(s);
-        return videoService.deleteVideo(userId, videoId);
+    public ResponseEntity<String> deleteVideo(@PathVariable ("id") int videoId, @RequestHeader("Authorization") String authHeader){
+        int loggedId = getUserId(authHeader);
+        if(loggedId == 0) {
+            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
+        }
+        return videoService.deleteVideo(loggedId, videoId);
     }
 
     @SneakyThrows

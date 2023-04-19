@@ -3,7 +3,6 @@ package com.youtube.youtube.controller;
 import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
 import com.youtube.youtube.service.CommentService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,45 +22,44 @@ public class CommentController extends AbstractController{
         return commentService.get(videoId);
     }
     @PostMapping("/comments/{video-id}/create")
-    public CommentCreateDTO createComment(@RequestBody CommentCreateDTO dto, HttpSession session, @PathVariable("video-id") int videoId) {
-        int userId;
-        if(session.getAttribute(LOGGED_ID) == null) {
+    public CommentCreateDTO createComment(@RequestBody CommentCreateDTO dto, @RequestHeader("Authorization") String authHeader, @PathVariable("video-id") int videoId) {
+        int loggedId = getUserId(authHeader);
+        if(loggedId == 0) {
             throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
         }
-        else {
-            userId = (int)session.getAttribute(LOGGED_ID);
-        }
-        return commentService.createComment(dto, userId, videoId);
+        return commentService.createComment(dto, loggedId, videoId);
     }
     @PostMapping("/comments/{id}/reaction")
-    public CommentReplyDTO react(@PathVariable("id") int commentId, HttpSession session, @RequestBody Integer reaction) {
-        int userId = getLoggedId(session);
-        return commentService.react(userId, commentId, reaction);
+    public CommentReplyDTO react(@PathVariable("id") int commentId, @RequestHeader("Authorization") String authHeader, @RequestBody Integer reaction) {
+        int loggedId = getUserId(authHeader);
+        if(loggedId == 0) {
+            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
+        }
+        return commentService.react(loggedId, commentId, reaction);
     }
     @PostMapping("/comments/{id}/reply")
-    public CommentReplyDTO replyToComment (@RequestBody CommentReplyDTO dto, HttpSession session, @PathVariable("id") int parentCommentId) {
-        int userId;
-        if(session.getAttribute(LOGGED_ID) == null) {
+    public CommentReplyDTO replyToComment (@RequestBody CommentReplyDTO dto, @RequestHeader("Authorization") String authHeader, @PathVariable("id") int parentCommentId) {
+        int loggedId = getUserId(authHeader);
+        if(loggedId == 0) {
             throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
         }
-        else {
-            userId = (int)session.getAttribute(LOGGED_ID);
-        }
-        return commentService.reply(dto, userId, parentCommentId);
+        return commentService.reply(dto, loggedId, parentCommentId);
     }
     @PutMapping("/comments/{id}/video/{video-id}")
-    public CommentBasicDTO editComment(@PathVariable ("id") int commentId, @RequestBody CommentBasicDTO editDTO, HttpSession s, @PathVariable ("video-id") int videoId){
-        int userId=getLoggedId(s);
-        return commentService.editComment(userId, commentId, editDTO, videoId);
-    }
-    @DeleteMapping("/comments/{id}")
-    public ResponseEntity<String> deleteComment(@PathVariable int id, HttpSession s) {
-        if(s.getAttribute(LOGGED_ID) == null) {
+    public CommentBasicDTO editComment(@PathVariable ("id") int commentId, @RequestBody CommentBasicDTO editDTO, @RequestHeader("Authorization") String authHeader, @PathVariable ("video-id") int videoId){
+        int loggedId = getUserId(authHeader);
+        if(loggedId == 0) {
             throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
         }
-        else {
-            commentService.deleteComment(id);
-            return ResponseEntity.ok("Comment deleted successfully.");
+        return commentService.editComment(loggedId, commentId, editDTO, videoId);
+    }
+    @DeleteMapping("/comments/{id}")
+    public ResponseEntity<String> deleteComment(@PathVariable int id, @RequestHeader("Authorization") String authHeader) {
+        int loggedId = getUserId(authHeader);
+        if(loggedId == 0) {
+            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
         }
+        commentService.deleteComment(id);
+        return ResponseEntity.ok("Comment deleted successfully.");
     }
 }

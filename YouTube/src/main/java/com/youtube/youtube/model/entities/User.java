@@ -36,6 +36,10 @@ public class User {
     private String telephone;
     @Column(name = "profile_picture_url")
     private String profilePicture;
+    @Column(name = "is_verified")
+    private int isVerified;
+    @Column(name = "confirmation_token")
+    private String confirmationToken;
 
     @ManyToMany//(fetch = FetchType.LAZY)
     @JoinTable(

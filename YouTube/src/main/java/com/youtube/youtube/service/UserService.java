@@ -7,17 +7,21 @@ import com.youtube.youtube.model.exceptions.BadRequestException;
 import com.youtube.youtube.model.exceptions.NotFoundException;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService extends AbstractService{
     @Autowired
     private BCryptPasswordEncoder encoder;
+    @Autowired
+    private EmailSenderService mailSender;
 
     public UserWithoutPassDTO register(RegisterDTO dto) {
         if(!dto.getPassword().equals(dto.getConfirmPassword())) {
@@ -31,13 +35,39 @@ public class UserService extends AbstractService{
         user.setPassword(encoder.encode(user.getPassword()));
         user.setDateCreated(LocalDateTime.now());
         user.setLocation(location);
+        user.setIsVerified(-1);
+        user.setConfirmationToken(generateConfirmationToken());
         userRepository.save(user);
+        sendConfirmationEmail(user);
         return mapper.map(user, UserWithoutPassDTO.class);
+    }
+    private String generateConfirmationToken(){
+        return UUID.randomUUID().toString();
+    }
+    private void sendConfirmationEmail(User user){
+        SimpleMailMessage message =new SimpleMailMessage();
+        message.setTo(user.getEmail());
+        message.setSubject("Confirm your email");
+        message.setText("Welcome and cheers, you just got registered.\n\n" +
+                " To confirm your email, please click the link below:\n\n" +
+                "http://localhost:8995/confirm?token=" + user.getConfirmationToken());
+        new Thread(()->  mailSender.sendEmail(user.getEmail(),message.getSubject(), message.getText())).start();
+    }
+    public boolean confirmEmail(String token){
+        User user = userRepository.findAllByConfirmationToken(token).orElseThrow(()-> new NotFoundException("No such token found"));
+        user.setConfirmationToken(null);
+        user.setIsVerified(1);
+        userRepository.save(user);
+        return true;
     }
     public UserWithoutPassDTO login(LoginDTO dto) {
         User user = userRepository.getUserByEmail(dto.getEmail()).orElseThrow(() -> new UnauthorizedException(WRONG_CREDENTIALS));
         if(!encoder.matches(dto.getPassword(), user.getPassword())) {
             throw new UnauthorizedException(WRONG_CREDENTIALS);
+        }
+        dto.setIsVerified(user.getIsVerified());
+        if(dto.getIsVerified() != 1) {
+            throw new UnauthorizedException("You have to verify first!");
         }
         return mapper.map(user, UserWithoutPassDTO.class);
     }
@@ -86,5 +116,11 @@ public class UserService extends AbstractService{
         u.setTelephone(dto.getTelephone());
         userRepository.save(u);
         return mapper.map(u, UserWithoutPassDTO.class);
+    }
+
+    public void verify(int loggedId) {
+        User user = userRepository.findById(loggedId).orElseThrow(() -> new NotFoundException(NO_SUCH_USER));
+        user.setIsVerified(1);
+        userRepository.save(user);
     }
 }
