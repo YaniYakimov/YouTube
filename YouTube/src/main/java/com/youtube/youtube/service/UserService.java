@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
 public class UserService extends AbstractService{
     @Autowired
     private BCryptPasswordEncoder encoder;
-    @Autowired
-    private JavaMailSender mailSender;
+
     public UserWithoutPassDTO register(RegisterDTO dto) {
         if(!dto.getPassword().equals(dto.getConfirmPassword())) {
             throw new BadRequestException("Password mismatch!");
@@ -33,7 +32,6 @@ public class UserService extends AbstractService{
         user.setDateCreated(LocalDateTime.now());
         user.setLocation(location);
         userRepository.save(user);
-//        mailSender.sendEmail("qniqkimov@gmail.com", "Welcome", "Cheers, you just got registered");
         return mapper.map(user, UserWithoutPassDTO.class);
     }
     public UserWithoutPassDTO login(LoginDTO dto) {

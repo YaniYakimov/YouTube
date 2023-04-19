@@ -2,6 +2,7 @@ package com.youtube.youtube.controller;
 
 import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
+import com.youtube.youtube.service.EmailSenderService;
 import com.youtube.youtube.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -15,6 +16,8 @@ import java.util.List;
 public class UserController extends AbstractController{
     @Autowired
     private UserService userService;
+    @Autowired
+    private EmailSenderService mailSender;
 
     @GetMapping("/users/{id}")
     public UserWithoutPassDTO getById(@PathVariable int id) {
@@ -22,6 +25,7 @@ public class UserController extends AbstractController{
     }
     @PostMapping("/users")
     public UserWithoutPassDTO register(@Valid @RequestBody RegisterDTO dto) {
+        mailSender.sendEmail("qniqkimov@gmail.com", "Welcome", "Cheers, you just got registered");
         return userService.register(dto);
     }
     @PostMapping("/users/sign-in")

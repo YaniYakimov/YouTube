@@ -45,7 +45,7 @@ public class CommentService extends AbstractService{
         commentRepository.save(comment);
         return mapper.map(comment, CommentCreateDTO.class);
     }
-    public CommentBasicDTO react(int userId, int commentId, int reaction) {
+    public CommentReplyDTO react(int userId, int commentId, int reaction) {
         validReaction(reaction);
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException(NO_SUCH_COMMENT));
         Optional<CommentReaction> existingReaction = commentReactionRepository.findById(userId, commentId);
@@ -57,7 +57,7 @@ public class CommentService extends AbstractService{
         }
         int likes = commentReactionRepository.countByCommentIdAndReaction(commentId, LIKE);
         int dislikes = commentReactionRepository.countByCommentIdAndReaction(commentId, DISLIKE);
-        CommentBasicDTO updatedComment = mapper.map(comment, CommentBasicDTO.class);
+        CommentReplyDTO updatedComment = mapper.map(comment, CommentReplyDTO.class);
         updatedComment.setLikes(likes);
         updatedComment.setDislikes(dislikes);
         return updatedComment;

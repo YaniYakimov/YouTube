@@ -34,7 +34,7 @@ public class CommentController extends AbstractController{
         return commentService.createComment(dto, userId, videoId);
     }
     @PostMapping("/comments/{id}/reaction")
-    public CommentBasicDTO react(@PathVariable("id") int commentId, HttpSession session, @RequestBody Integer reaction) {
+    public CommentReplyDTO react(@PathVariable("id") int commentId, HttpSession session, @RequestBody Integer reaction) {
         int userId = getLoggedId(session);
         return commentService.react(userId, commentId, reaction);
     }
