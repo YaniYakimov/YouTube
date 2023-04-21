@@ -7,11 +7,15 @@ import com.youtube.youtube.service.VideoService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.List;
 
@@ -95,7 +99,19 @@ public class VideoController extends AbstractController{
         if(loggedId == 0) {
             throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
         }
-        return amazonService.uploadFile(file,name,description,visibilityId,categoryId,10    );
+        return amazonService.uploadFile(file,name,description,visibilityId,categoryId,loggedId);
+    }
+
+    @GetMapping("/videos/download")
+    public void downloadVideoAWS(@RequestParam String url, HttpServletResponse resp ){
+        //todo logged
+        try {
+            InputStream inputStream = amazonService.download(url);
+            IOUtils.copy(inputStream, resp.getOutputStream());
+            resp.flushBuffer();
+        }catch (IOException e){
+            throw new RuntimeException("Download unsuccessful");
+        }
     }
 
 }

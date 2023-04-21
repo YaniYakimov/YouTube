@@ -6,30 +6,36 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.youtube.youtube.model.DTOs.VideoInfoDTO;
 import com.youtube.youtube.model.entities.Category;
 import com.youtube.youtube.model.entities.User;
 import com.youtube.youtube.model.entities.Video;
 import com.youtube.youtube.model.entities.Visibility;
 import com.youtube.youtube.model.exceptions.BadRequestException;
+import com.youtube.youtube.model.exceptions.NotFoundException;
 import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
-
+import com.youtube.youtube.AmazonConfig;
 
 @Service
 public class AmazonService extends AbstractService{
+    @Autowired
+    public AmazonS3 amazonS3;
     @Value("${aws.s3.accesskey}")
     private String awsAccessKey;
     @Value("${aws.s3.secretkey}")
@@ -83,15 +89,15 @@ public class AmazonService extends AbstractService{
     }
 
     private void uploadToS3(String fileName, File file) {
-        BasicAWSCredentials awsCreds = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
-        AmazonS3 s3 = AmazonS3ClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
-                .withRegion("us-east-1")
-                .build();
+//        BasicAWSCredentials awsCreds = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
+//        AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard()
+//                .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+//                .withRegion("us-east-1")
+//                .build();
 
         PutObjectRequest putRequest = new PutObjectRequest(awsBucketName, fileName, file);
         putRequest.withCannedAcl(CannedAccessControlList.PublicRead);
-        s3.putObject(putRequest);
+        amazonS3.putObject(putRequest);
     }
 
     private void validUploadData(MultipartFile file, String name, String description){
@@ -113,4 +119,12 @@ public class AmazonService extends AbstractService{
         }
     }
 
+    public S3ObjectInputStream download(String url) {
+        String fileName = url.substring(url.lastIndexOf("/")+1);
+        if (!amazonS3.doesObjectExist(awsBucketName, fileName)) {
+            throw new NotFoundException(NO_SUCH_VIDEO);
+        }
+        S3Object s3Object = amazonS3.getObject(awsBucketName, fileName);
+        return s3Object.getObjectContent();
+    }
 }
