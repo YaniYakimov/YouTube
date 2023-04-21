@@ -2,6 +2,7 @@ package com.youtube.youtube.controller;
 
 import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
+import com.youtube.youtube.service.AmazonService;
 import com.youtube.youtube.service.VideoService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -16,9 +17,10 @@ import java.util.List;
 
 @RestController
 public class VideoController extends AbstractController{
-
     @Autowired
     private VideoService videoService;
+    @Autowired
+    private AmazonService amazonService;
     @GetMapping("/users/{id}/videos")
     public UserVideosDTO getUserVideos(@PathVariable int id){
         return videoService.getUserVideos(id);
@@ -83,6 +85,17 @@ public class VideoController extends AbstractController{
     public void downloadVideo(@PathVariable("fileName") String fileName, HttpServletResponse resp ){
         File f = videoService.download(fileName);
         Files.copy(f.toPath(), resp.getOutputStream());
+    }
+
+    @PostMapping("/videos/upload-s3")
+    public VideoInfoDTO uploadVideoAWS(@RequestParam ("file") MultipartFile file, @RequestParam("name") String name,
+                                       @RequestParam("description") String description, @RequestParam("visibilityId") int visibilityId,
+                                       @RequestParam("categoryId") int categoryId, @RequestHeader("Authorization") String authHeader){
+        int loggedId = getUserId(authHeader);
+        if(loggedId == 0) {
+            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
+        }
+        return amazonService.uploadFile(file,name,description,visibilityId,categoryId,10    );
     }
 
 }

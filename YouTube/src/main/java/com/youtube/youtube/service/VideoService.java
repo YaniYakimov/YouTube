@@ -83,6 +83,7 @@ public class VideoService extends AbstractService {
     @SneakyThrows
     public VideoInfoDTO uploadVideo(MultipartFile file, String name, String description,
                                     int visibilityId, int categoryId, int userId) {
+        //todo delete method
         validUploadData(file, name, description);
         Visibility visibility=findVisibility(visibilityId);
         Category category= findCategory(categoryId);
