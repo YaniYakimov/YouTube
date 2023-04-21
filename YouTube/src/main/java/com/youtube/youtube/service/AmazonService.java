@@ -36,10 +36,6 @@ import com.youtube.youtube.AmazonConfig;
 public class AmazonService extends AbstractService{
     @Autowired
     public AmazonS3 amazonS3;
-    @Value("${aws.s3.accesskey}")
-    private String awsAccessKey;
-    @Value("${aws.s3.secretkey}")
-    private String awsSecretKey;
     @Value("${aws.s3.bucketname}")
     private String awsBucketName;
     private static String[] allowedVideoFormats = {"video/mp4", "video/mpeg", "video/webm",
@@ -52,13 +48,10 @@ public class AmazonService extends AbstractService{
             Visibility visibility=findVisibility(visibilityId);
             Category category= findCategory(categoryId);
             String ext = FilenameUtils.getExtension(file.getOriginalFilename());
-
             String fileName = UUID.randomUUID().toString() + "."+ext;
-            //convert the multipart file to file
             File convertedFile = convertMultiPartFileToFile(file);
             String url =File.separator+awsBucketName+File.separator+".s3.amazonaws.com"
                         +File.separator+ fileName+ "-" + System.currentTimeMillis();
-            //save to db
             User user = getUserById(userId);
             Video video=new Video();
             video.setName(name);
@@ -69,12 +62,9 @@ public class AmazonService extends AbstractService{
             video.setDateCreated(LocalDateTime.now());
             video.setVideoUrl(url);
             videoRepository.save(video);
-
-            //upload to s3
             uploadToS3(fileName, convertedFile);
             convertedFile.delete();
             return mapper.map(video, VideoInfoDTO.class);
-//            return fileName + " has been uploaded on amazon s3";
         } catch (IOException ex ) {
             throw new RuntimeException("There was a problem uploading the file");
         }
@@ -89,12 +79,6 @@ public class AmazonService extends AbstractService{
     }
 
     private void uploadToS3(String fileName, File file) {
-//        BasicAWSCredentials awsCreds = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
-//        AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard()
-//                .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
-//                .withRegion("us-east-1")
-//                .build();
-
         PutObjectRequest putRequest = new PutObjectRequest(awsBucketName, fileName, file);
         putRequest.withCannedAcl(CannedAccessControlList.PublicRead);
         amazonS3.putObject(putRequest);

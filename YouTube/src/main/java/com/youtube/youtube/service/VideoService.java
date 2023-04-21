@@ -7,20 +7,13 @@ import com.youtube.youtube.model.exceptions.NotFoundException;
 import com.youtube.youtube.model.repositories.VideoReactionRepository;
 import com.youtube.youtube.model.repositories.VideoWatchRepository;
 import jakarta.transaction.Transactional;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.apache.commons.io.FilenameUtils;
-
-import java.io.File;
-import java.nio.file.Files;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,7 +36,7 @@ public class VideoService extends AbstractService {
     }
 
     public List<SearchVideoDTO> searchVideo(VideoWithoutOwnerDTO searchData) {
-        List<Video> videos = videoRepository.findAllByName(searchData.getName());
+        List<Video> videos = videoRepository.findAllByTitle(searchData.getName());
         if(videos.isEmpty()){
             throw new NotFoundException("There is no video with searched name.");
         }
@@ -78,37 +71,6 @@ public class VideoService extends AbstractService {
         return mapper.map(user, UserVideosDTO.class);
     }
 
-
-
-    @SneakyThrows
-    public VideoInfoDTO uploadVideo(MultipartFile file, String name, String description,
-                                    int visibilityId, int categoryId, int userId) {
-        //todo delete method
-        validUploadData(file, name, description);
-        Visibility visibility=findVisibility(visibilityId);
-        Category category= findCategory(categoryId);
-        String ext = FilenameUtils.getExtension(file.getOriginalFilename());
-        String fileName = UUID.randomUUID().toString() + "."+ext;
-        File dir = new File(UPLOADS);
-        if(!dir.exists()){
-            dir.mkdirs();
-        }
-        File f = new File(dir, fileName);
-        Files.copy(file.getInputStream(), f.toPath());
-        String url = dir.getName() + File.separator + f.getName();
-        User user = getUserById(userId);
-        Video video=new Video();
-        video.setName(name);
-        video.setDescription(description);
-        video.setVisibility(visibility);
-        video.setCategory(category);
-        video.setUser(user);
-        video.setDateCreated(LocalDateTime.now());
-        video.setVideoUrl(url);
-        videoRepository.save(video);
-        return mapper.map(video, VideoInfoDTO.class);
-    }
-
     @Transactional
     public VideoReactionDTO reactToVideo(int userId, int videoId, int reaction) {
         validReaction(reaction);
@@ -128,34 +90,5 @@ public class VideoService extends AbstractService {
         updatedVideo.setLikes(likes);
         updatedVideo.setDislikes(dislikes);
         return updatedVideo;
-    }
-
-    public File download(String fileName) {
-        File dir = new File(UPLOADS);
-        File f = new File(dir, fileName);
-        if(f.exists()){
-            return f;
-        }
-        throw new NotFoundException("File not found.");
-    }
-
-
-    private void validUploadData(MultipartFile file, String name, String description){
-        if (file.isEmpty()) {
-            throw new BadRequestException("The file is not attached. Please try again.");
-        }
-        System.out.println(file.getContentType());
-        if (!Arrays.asList(allowedVideoFormats).contains(file.getContentType())) {
-            throw new BadRequestException("Invalid file format. Only video files are allowed.");
-        }
-        if (file.getSize() > MAX_VIDEO_SIZE) {
-            throw new BadRequestException("File is too large. Maximum file size is 256 GB.");
-        }
-        if(name.length()> MAX_TITLE_LENGTH){
-            throw new BadRequestException(TITLE_TOO_LONG);
-        }
-        if(description.length()> MAX_DESCRIPTION_LENGTH){
-            throw new BadRequestException(DESCRIPTION_TOO_LONG);
-        }
     }
 }

@@ -6,17 +6,13 @@ import com.youtube.youtube.service.AmazonService;
 import com.youtube.youtube.service.VideoService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import lombok.SneakyThrows;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.List;
 
 @RestController
@@ -37,19 +33,6 @@ public class VideoController extends AbstractController{
             throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
         }
         return videoService.getVideoById(videoId, loggedId);
-    }
-
-    @PostMapping("/videos")
-    public VideoInfoDTO uploadVideo(@RequestParam ("file") MultipartFile file, @RequestParam("name") String name,
-                                    @RequestParam("description") String description, @RequestParam("visibilityId") int visibilityId,
-                                    @RequestParam("categoryId") int categoryId, @RequestHeader("Authorization") String authHeader){
-        //todo fix temp file bug
-        System.out.println("Start uploading");
-        int loggedId = getUserId(authHeader);
-        if(loggedId == 0) {
-            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
-        }
-        return videoService.uploadVideo(file,name,description,visibilityId,categoryId, loggedId);
     }
 
     @PostMapping("/videos/search")
@@ -82,13 +65,6 @@ public class VideoController extends AbstractController{
             throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
         }
         return videoService.deleteVideo(loggedId, videoId);
-    }
-
-    @SneakyThrows
-    @GetMapping("/videos/download/{fileName}")
-    public void downloadVideo(@PathVariable("fileName") String fileName, HttpServletResponse resp ){
-        File f = videoService.download(fileName);
-        Files.copy(f.toPath(), resp.getOutputStream());
     }
 
     @PostMapping("/videos/upload-s3")
