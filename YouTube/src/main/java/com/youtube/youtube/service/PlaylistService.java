@@ -7,16 +7,17 @@ import com.youtube.youtube.model.entities.Video;
 import com.youtube.youtube.model.entities.Visibility;
 import com.youtube.youtube.model.exceptions.BadRequestException;
 import com.youtube.youtube.model.exceptions.NotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PlaylistService extends AbstractService {
+    private enum SortType {VIEWS,NAME,DATE_CREATED}
 
     public PlaylistInfoDTO createPlaylist(int userId, CreatePlaylistDTO createData) {
         Playlist playlist = new Playlist();
@@ -71,14 +72,14 @@ public class PlaylistService extends AbstractService {
         return mapper.map(playlist, PlaylistInfoDTO.class);
     }
 
-    public List<SearchPlayListDTO> searchPlaylist(PlaylistInfoDTO searchData) {
-        List<Playlist> result = playlistRepository.findAllByTitle(searchData.getName());
-        if(result.isEmpty()) {
+    public Page<SearchPlayListDTO> searchPlaylist(PlaylistInfoDTO searchData, int page, int size) {
+        Pageable pageable = PageRequest.of(page,size, Sort.by(Sort.Direction.DESC,"name"));
+        Page<SearchPlayListDTO> playlist = playlistRepository.findAllByTitle(searchData.getName(), pageable)
+                .map(v -> mapper.map(v, SearchPlayListDTO.class));
+        if(playlist.isEmpty()) {
             throw new NotFoundException("There is no playlist with searched name.");
         }
-        return  result.stream()
-                .map(p -> mapper.map(p, SearchPlayListDTO.class))
-                .collect(Collectors.toList());
+        return playlist;
     }
 
     public void deletePlaylist(int userId, int playlistId) {
@@ -86,48 +87,25 @@ public class PlaylistService extends AbstractService {
         checkPlaylistOwner(playlist, userId);
         playlistRepository.delete(playlist);
     }
-
-    public PlaylistSortDTO getPlaylistById(int userId, int id, SortPlaylistDTO sortData) {
+    public Page<VideoWithoutOwnerDTO> getPlaylistById(int id, SortPlaylistDTO sortData, int page, int size) {
+        getSortType(sortData.getSortType());
         Playlist playlist=findPlaylistById(id);
-        checkPlaylistOwner(playlist, userId);
         playlist.setViews(playlist.getViews()+1);
         playlistRepository.save(playlist);
-        List<Video> videos=playlist.getVideos().stream().toList();
-        SortType sortType=getSortType(sortData.getSortType());
 
-        List<VideoWithoutOwnerDTO> videosDTO= videos.stream()
-                .map( v -> mapper.map(v, VideoWithoutOwnerDTO.class))
-                .collect(Collectors.toList());
-
-        switch (sortType){
-            case VIEWS -> {
-                videosDTO.sort((v1, v2) -> Long.compare(v1.getViews(), v2.getViews()));
-            }
-            case NAME -> {
-                videosDTO.sort((v1, v2) -> v1.getName().compareTo(v2.getName()));
-            }
-            case DATE -> {
-                videosDTO.sort((v1, v2) -> v1.getDateCreated().compareTo(v2.getDateCreated()));
-            }
-        }
-        if(sortData.isDescOrder()){
-            Collections.reverse(videosDTO);
-        }
-
-        PlaylistSortDTO result=mapper.map(playlist, PlaylistSortDTO.class);
-        result.setSortedVideos(videosDTO);
-        return result;
+        Sort.Direction direction= sortData.isDescOrder() ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable=PageRequest.of(page,size, Sort.by(direction, sortData.getSortType()));
+        return videoRepository.findAllInPlaylist(id, pageable)
+                .map(video -> mapper.map(video, VideoWithoutOwnerDTO.class));
     }
 
-    private enum SortType {VIEWS,NAME,DATE}
 
-    private SortType getSortType(String orderBy){
+    private boolean getSortType(String orderBy){
         for (int i = 0; i < SortType.values().length; i++) {
             if(orderBy.equalsIgnoreCase(SortType.values()[i].toString())){
-                return SortType.values()[i];
+                return true;
             }
         }
         throw new BadRequestException("Invalid sort type");
     }
-
 }

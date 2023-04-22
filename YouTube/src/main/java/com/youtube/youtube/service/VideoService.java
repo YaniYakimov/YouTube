@@ -2,19 +2,17 @@ package com.youtube.youtube.service;
 
 import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.model.entities.*;
-import com.youtube.youtube.model.exceptions.BadRequestException;
 import com.youtube.youtube.model.exceptions.NotFoundException;
 import com.youtube.youtube.model.repositories.VideoReactionRepository;
 import com.youtube.youtube.model.repositories.VideoWatchRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class VideoService extends AbstractService {
@@ -22,8 +20,6 @@ public class VideoService extends AbstractService {
     private VideoReactionRepository reactionRepository;
     @Autowired
     private VideoWatchRepository videoWatchRepository;
-    private static String[] allowedVideoFormats = {"video/mp4", "video/mpeg", "video/webm",
-                        "video/quicktime", "video/x-msvideo", "video/x-flv", "video/3gpp"};
     @Transactional
     public VideoInfoDTO getVideoById(int videoId, int userId) {
         Video video = findVideoById(videoId);
@@ -35,14 +31,14 @@ public class VideoService extends AbstractService {
         return mapper.map(video,VideoInfoDTO.class);
     }
 
-    public List<SearchVideoDTO> searchVideo(VideoWithoutOwnerDTO searchData) {
-        List<Video> videos = videoRepository.findAllByTitle(searchData.getName());
+    public Page<SearchVideoDTO> searchVideo(VideoWithoutOwnerDTO searchData, int page, int size) {
+        Pageable pageable = PageRequest.of(page,size, Sort.by(Sort.Direction.DESC,"views"));
+        Page<SearchVideoDTO> videos = videoRepository.findAllByTitle(searchData.getName(), pageable)
+                .map(v -> mapper.map(v, SearchVideoDTO.class));
         if(videos.isEmpty()){
             throw new NotFoundException("There is no video with searched name.");
         }
-        return videos.stream()
-                .map(v -> mapper.map(v, SearchVideoDTO.class))
-                .collect(Collectors.toList());
+        return videos;
     }
 
     public VideoInfoDTO editVideo(int userId, int videoId, EditVideoDTO editData) {
@@ -56,19 +52,15 @@ public class VideoService extends AbstractService {
         return mapper.map(video, VideoInfoDTO.class);
     }
 
-    public ResponseEntity<String> deleteVideo(int userId, int videoId) {
-        Video video=findVideoById(videoId);
-        checkVideoOwner(video,userId);
-        videoRepository.delete(video);
-        return ResponseEntity.ok("Video deleted successfully.");
-    }
-
-    public UserVideosDTO getUserVideos(int userId) {
+    public Page<VideoWithoutOwnerDTO> getUserVideos(int userId, int page, int size) {
         User user=getUserById(userId);
         if(user.getVideos().isEmpty()){
             throw new NotFoundException("This user has no videos.");
         }
-        return mapper.map(user, UserVideosDTO.class);
+        Pageable pageable = PageRequest.of(page,size, Sort.by(Sort.Direction.ASC, "name"));
+        return videoRepository.findAllByUser(userId, pageable)
+                .map(video -> mapper.map(video, VideoWithoutOwnerDTO.class));
+
     }
 
     @Transactional
@@ -83,7 +75,6 @@ public class VideoService extends AbstractService {
         else{
             reactionRepository.save(userId, videoId, reaction);
         }
-
         int likes=reactionRepository.countByVideoIdAndReaction(videoId, LIKE);
         int dislikes=reactionRepository.countByVideoIdAndReaction(videoId, DISLIKE);
         VideoReactionDTO updatedVideo=mapper.map(video,VideoReactionDTO.class);
