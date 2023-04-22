@@ -15,4 +15,6 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Integer> {
     int countVideosInPlaylist(int playlistId);
 
     List<Playlist> findAllByName(String name);
+    @Query(value = "SELECT * FROM playlists WHERE name LIKE %:name%", nativeQuery = true)
+    List<Playlist> findAllByTitle(String name);
 }

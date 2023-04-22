@@ -72,7 +72,7 @@ public class PlaylistService extends AbstractService {
     }
 
     public List<SearchPlayListDTO> searchPlaylist(PlaylistInfoDTO searchData) {
-        List<Playlist> result = playlistRepository.findAllByName(searchData.getName());
+        List<Playlist> result = playlistRepository.findAllByTitle(searchData.getName());
         if(result.isEmpty()) {
             throw new NotFoundException("There is no playlist with searched name.");
         }
