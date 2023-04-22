@@ -6,6 +6,7 @@ import com.youtube.youtube.model.exceptions.BadRequestException;
 import com.youtube.youtube.model.exceptions.NotFoundException;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
 import jakarta.servlet.http.HttpSession;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-
+@Setter
 public abstract class AbstractController {
     protected static final String LOGGED = "LOGGED";
     protected static final String LOGGED_ID = "LOGGED_ID";

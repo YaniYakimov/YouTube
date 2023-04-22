@@ -3,12 +3,17 @@ package com.youtube.youtube.service;
 import com.youtube.youtube.model.DTOs.CommentBasicDTO;
 import com.youtube.youtube.model.DTOs.CommentCreateDTO;
 import com.youtube.youtube.model.DTOs.CommentReplyDTO;
+import com.youtube.youtube.model.DTOs.UserWithoutPassDTO;
 import com.youtube.youtube.model.entities.*;
 import com.youtube.youtube.model.exceptions.BadRequestException;
 import com.youtube.youtube.model.exceptions.NotFoundException;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
 import com.youtube.youtube.model.repositories.CommentReactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,20 +25,15 @@ import java.util.stream.Collectors;
 public class CommentService extends AbstractService{
     @Autowired
     CommentReactionRepository commentReactionRepository;
-    public List<CommentReplyDTO> sort(int videoId) {
+    public Page<CommentReplyDTO> sort(int videoId, Pageable pageable) {
         Video video = videoRepository.findById(videoId).orElseThrow(() -> new NotFoundException(NO_SUCH_VIDEO));
-        return commentRepository.findAllByVideo(video)
-                .stream()
-                .sorted((o1, o2) -> o2.getDateCreated().compareTo(o1.getDateCreated()))
-                .map(c -> mapper.map(c, CommentReplyDTO.class))
-                .collect(Collectors.toList());
+        Page<Comment> comments = commentRepository.findAllByVideo(video, pageable);
+        return comments.map(c -> mapper.map(c, CommentReplyDTO.class));
     }
-    public List<CommentReplyDTO> get(int videoId) {
-        Video video = videoRepository.findById(videoId).orElseThrow(() -> new BadRequestException(NO_SUCH_VIDEO));
-        return video.getComments()
-                .stream()
-                .map(c -> mapper.map(c, CommentReplyDTO.class))
-                .collect(Collectors.toList());
+    public Page<CommentReplyDTO> get(int videoId, Pageable pageable) {
+        Video video = videoRepository.findById(videoId).orElseThrow(() -> new NotFoundException(NO_SUCH_VIDEO));
+        Page<Comment> comments = commentRepository.findAllByVideo(video, pageable);
+        return comments.map(c -> mapper.map(c, CommentReplyDTO.class));
     }
     public CommentCreateDTO createComment(CommentCreateDTO dto, int userId, int videoId) {
         User user = getUserById(userId);
