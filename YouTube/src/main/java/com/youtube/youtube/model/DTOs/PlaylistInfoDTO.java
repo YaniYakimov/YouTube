@@ -20,7 +20,7 @@ public class PlaylistInfoDTO {
     private int views;
     private String playlistUrl;
     private VisibilityDTO visibility;
-    private Set<VideoWithoutOwnerDTO> videos;
+//    private Set<VideoWithoutOwnerDTO> videos;
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dateCreated;
 }
