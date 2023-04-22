@@ -12,5 +12,6 @@ import java.time.LocalDateTime;
 public class ErrorDTO {
     private Object msg;
     private int status;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime time;
 }

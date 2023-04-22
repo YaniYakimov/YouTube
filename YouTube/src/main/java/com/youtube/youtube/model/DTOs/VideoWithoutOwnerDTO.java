@@ -1,5 +1,6 @@
 package com.youtube.youtube.model.DTOs;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,9 +15,9 @@ import java.time.LocalDateTime;
 
 public class VideoWithoutOwnerDTO{
     private int id;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dateCreated;
     private String name;
-//    private int visibilityId;
     private VisibilityDTO visibility;
     private long views;
     private String videoUrl;

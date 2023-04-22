@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,23 +22,22 @@ public class VideoController extends AbstractController{
     private VideoService videoService;
     @Autowired
     private AmazonService amazonService;
-    @GetMapping("/users/{id}/videos")
-    public UserVideosDTO getUserVideos(@PathVariable int id){
-        return videoService.getUserVideos(id);
 
+    @GetMapping("/users/{id}/videos")
+    public Page<VideoWithoutOwnerDTO> getUserVideos(@PathVariable int id, @RequestParam (defaultValue = "0") int page,
+                                                    @RequestParam (defaultValue = "10") int size){
+        return videoService.getUserVideos(id, page, size);
     }
     @GetMapping("/videos/{id}")
     public VideoInfoDTO getVideoById(@PathVariable ("id") int videoId, @RequestHeader("Authorization") String authHeader){
         int loggedId = getUserId(authHeader);
-        if(loggedId == 0) {
-            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
-        }
         return videoService.getVideoById(videoId, loggedId);
     }
 
     @PostMapping("/videos/search")
-    public List<SearchVideoDTO> searchVideo(@RequestBody VideoWithoutOwnerDTO searchData){
-        return videoService.searchVideo(searchData);
+    public Page<SearchVideoDTO> searchVideo(@RequestBody VideoWithoutOwnerDTO searchData, @RequestParam (defaultValue = "0") int page,
+                                            @RequestParam (defaultValue = "10") int size){
+        return videoService.searchVideo(searchData, page, size);
     }
 
     @PostMapping("/videos/{id}/reaction")
@@ -52,19 +52,14 @@ public class VideoController extends AbstractController{
     @PutMapping("/videos/{id}")
     public VideoInfoDTO editVideo(@PathVariable ("id") int videoId, @Valid @RequestBody EditVideoDTO editData, @RequestHeader("Authorization") String authHeader){
         int loggedId = getUserId(authHeader);
-        if(loggedId == 0) {
-            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
-        }
         return videoService.editVideo(loggedId, videoId, editData);
     }
 
     @DeleteMapping("/videos/{id}")
     public ResponseEntity<String> deleteVideo(@PathVariable ("id") int videoId, @RequestHeader("Authorization") String authHeader){
         int loggedId = getUserId(authHeader);
-        if(loggedId == 0) {
-            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
-        }
-        return videoService.deleteVideo(loggedId, videoId);
+        amazonService.deleteVideo(loggedId, videoId);
+        return ResponseEntity.ok("Video deleted successfully.");
     }
 
     @PostMapping("/videos/upload-s3")
@@ -72,9 +67,6 @@ public class VideoController extends AbstractController{
                                        @RequestParam("description") String description, @RequestParam("visibilityId") int visibilityId,
                                        @RequestParam("categoryId") int categoryId, @RequestHeader("Authorization") String authHeader){
         int loggedId = getUserId(authHeader);
-        if(loggedId == 0) {
-            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
-        }
         return amazonService.uploadFile(file,name,description,visibilityId,categoryId,loggedId);
     }
 

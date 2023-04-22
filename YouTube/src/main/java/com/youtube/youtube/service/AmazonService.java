@@ -4,10 +4,7 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.model.*;
 import com.youtube.youtube.model.DTOs.VideoInfoDTO;
 import com.youtube.youtube.model.entities.Category;
 import com.youtube.youtube.model.entities.User;
@@ -26,10 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+
 import com.youtube.youtube.AmazonConfig;
 
 @Service
@@ -51,7 +46,7 @@ public class AmazonService extends AbstractService{
             String fileName = UUID.randomUUID().toString() + "."+ext;
             File convertedFile = convertMultiPartFileToFile(file);
             String url =File.separator+awsBucketName+File.separator+".s3.amazonaws.com"
-                        +File.separator+ fileName+ "-" + System.currentTimeMillis();
+                        +File.separator+ fileName;
             User user = getUserById(userId);
             Video video=new Video();
             video.setName(name);
@@ -88,7 +83,6 @@ public class AmazonService extends AbstractService{
         if (file.isEmpty()) {
             throw new BadRequestException("The file is not attached. Please try again.");
         }
-        System.out.println(file.getContentType());
         if (!Arrays.asList(allowedVideoFormats).contains(file.getContentType())) {
             throw new BadRequestException("Invalid file format. Only video files are allowed.");
         }
@@ -104,11 +98,35 @@ public class AmazonService extends AbstractService{
     }
 
     public S3ObjectInputStream download(String url) {
+        String fileName = getFileName(url);
+        S3Object s3Object = amazonS3.getObject(awsBucketName, fileName);
+        return s3Object.getObjectContent();
+    }
+
+    public void deleteVideo(int userId, int videoId) {
+        Video video=findVideoById(videoId);
+        checkVideoOwner(video,userId);
+        String videoName = getFileName(video.getVideoUrl());
+        amazonS3.deleteObject(awsBucketName, videoName);
+        videoRepository.delete(video);
+    }
+
+//    public void deleteAllUserVideos(int userId) {
+//        User user=getUserById(userId);
+//        String videoName = getFileName(video.getVideoUrl());
+////        List<String> videoNames=new ArrayList<>();
+//        String [] videoNames= {"",""};
+//        DeleteObjectsRequest delObjReq= new DeleteObjectsRequest(awsBucketName).withKeys(videoNames);
+//        amazonS3.deleteObjects(videoNames);
+//        videoRepository.delete(video);
+//    }
+
+    private String getFileName(String url){
         String fileName = url.substring(url.lastIndexOf("/")+1);
+        System.out.println(fileName);
         if (!amazonS3.doesObjectExist(awsBucketName, fileName)) {
             throw new NotFoundException(NO_SUCH_VIDEO);
         }
-        S3Object s3Object = amazonS3.getObject(awsBucketName, fileName);
-        return s3Object.getObjectContent();
+        return fileName;
     }
 }

@@ -4,6 +4,7 @@ import com.youtube.youtube.model.DTOs.*;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
 import com.youtube.youtube.service.UserService;
 import jakarta.validation.Valid;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
@@ -11,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@Setter
 @RestController
 public class UserController extends AbstractController{
     @Autowired
@@ -42,13 +43,10 @@ public class UserController extends AbstractController{
     }
     @PostMapping("/users/sign-out")
     public ResponseEntity<String> logOut(@RequestHeader("Authorization") String authHeader) {
-        int loggedId = getUserId(authHeader);
-        if(loggedId != 0) {
-            String body = "Log-out was successful.";
-            ResponseEntity.ok(body);
-            addToBlacklist(authHeader, body);
-        }
-        throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
+        getUserId(authHeader);
+        String body = "Log-out was successful.";
+        addToBlacklist(authHeader, body);
+        return ResponseEntity.ok(body);
     }
     @PostMapping("/users/search")
     public Page<UserWithoutPassDTO> searchByName(@RequestBody UserBasicInfoDTO dto, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
@@ -62,8 +60,7 @@ public class UserController extends AbstractController{
     @PutMapping("/users")
     public UserWithoutPassDTO edit(@Valid @RequestBody RegisterDTO dto, @RequestHeader("Authorization") String authHeader) {
         int loggedId = getUserId(authHeader);
-        userService.edit(dto, loggedId);
-        throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
+        return userService.edit(dto, loggedId);
     }
     @DeleteMapping("/users")
     public ResponseEntity<String> deleteAccount(@RequestHeader("Authorization") String authHeader) {
