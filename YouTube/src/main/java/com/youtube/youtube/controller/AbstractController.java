@@ -38,6 +38,9 @@ public abstract class AbstractController {
                 userId = jwtUtils.getUserIdFromToken(token);
             }
         }
+        if(userId == 0) {
+            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
+        }
         return userId;
     }
     protected void addToBlacklist(String authHeader, String body) {
