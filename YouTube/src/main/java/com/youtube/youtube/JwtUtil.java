@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
-
 @Component
 public class JwtUtil {
     @Autowired
@@ -19,6 +18,8 @@ public class JwtUtil {
     private String secret;
     @Value("${jwt.expiration}")
     private long expiration;
+    @Value("${jwt.jwtSecret}")
+    private String jwtSecret;
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
@@ -50,5 +51,16 @@ public class JwtUtil {
     }
     public void addToBlacklist(String token) {
         tokenBlacklistService.addToken(token);
+    }
+    public String generateRefreshToken(int id) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expiration*300);
+
+        return Jwts.builder()
+                .setSubject(Integer.toString(id))
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .compact();
     }
 }

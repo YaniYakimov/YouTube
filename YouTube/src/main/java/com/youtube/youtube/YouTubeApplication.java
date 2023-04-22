@@ -5,9 +5,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
-public class YouTubeApplication {
+public class YouTubeApplication implements WebMvcConfigurer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(YouTubeApplication.class, args);

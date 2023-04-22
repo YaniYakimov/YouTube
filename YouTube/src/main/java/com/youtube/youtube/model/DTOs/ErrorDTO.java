@@ -1,5 +1,6 @@
 package com.youtube.youtube.model.DTOs;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,4 @@ public class ErrorDTO {
     private Object msg;
     private int status;
     private LocalDateTime time;
-
-
 }

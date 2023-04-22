@@ -7,9 +7,14 @@ import com.youtube.youtube.model.exceptions.BadRequestException;
 import com.youtube.youtube.model.exceptions.NotFoundException;
 import com.youtube.youtube.model.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -50,7 +55,7 @@ public class UserService extends AbstractService{
         message.setSubject("Confirm your email");
         message.setText("Welcome and cheers, you just got registered.\n\n" +
                 " To confirm your email, please click the link below:\n\n" +
-                "http://localhost:8995/confirm?token=" + user.getConfirmationToken());
+                "http://localhost:8995/users/confirm?token=" + user.getConfirmationToken());
         new Thread(()->  mailSender.sendEmail(user.getEmail(),message.getSubject(), message.getText())).start();
     }
     public boolean confirmEmail(String token){
@@ -78,15 +83,13 @@ public class UserService extends AbstractService{
     public void deleteAccount(int loggedId) {
         userRepository.deleteById(loggedId);
     }
-    public List<UserWithoutPassDTO> getUserByName(UserBasicInfoDTO dto) {
-        List<UserWithoutPassDTO> result = userRepository.getUserByFirstName(dto.getFirstName())
-                .stream()
-                .map(u -> mapper.map(u, UserWithoutPassDTO.class))
-                .collect(Collectors.toList());
-        if(result.isEmpty()) {
+    public Page<UserWithoutPassDTO> getUserByName(UserBasicInfoDTO dto, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "firstName"));
+        Page<UserWithoutPassDTO> userPage = userRepository.getUserByFirstName(dto.getFirstName(), pageable).map(u -> mapper.map(u, UserWithoutPassDTO.class));
+        if(userPage.isEmpty()) {
             throw new NotFoundException("There is/are no user/users with this name!");
         }
-        return result;
+        return userPage;
     }
     public int subscribe(int subscriberId, int subscribedId) {
         User subscriber = getUserById(subscriberId);
@@ -116,11 +119,5 @@ public class UserService extends AbstractService{
         u.setTelephone(dto.getTelephone());
         userRepository.save(u);
         return mapper.map(u, UserWithoutPassDTO.class);
-    }
-
-    public void verify(int loggedId) {
-        User user = userRepository.findById(loggedId).orElseThrow(() -> new NotFoundException(NO_SUCH_USER));
-        user.setIsVerified(1);
-        userRepository.save(user);
     }
 }
