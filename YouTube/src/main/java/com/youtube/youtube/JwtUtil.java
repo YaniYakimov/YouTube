@@ -52,15 +52,4 @@ public class JwtUtil {
     public void addToBlacklist(String token) {
         tokenBlacklistService.addToken(token);
     }
-    public String generateRefreshToken(int id) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expiration*300);
-
-        return Jwts.builder()
-                .setSubject(Integer.toString(id))
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
-                .compact();
-    }
 }

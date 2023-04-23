@@ -25,12 +25,6 @@ public abstract class AbstractController {
     @Autowired
     protected JwtUtil jwtUtils;
 
-    protected int getLoggedId (HttpSession s){
-        if(s.getAttribute(LOGGED) == null){
-            throw new UnauthorizedException(YOU_HAVE_TO_LOG_IN_FIRST);
-        }
-        return (int) s.getAttribute(LOGGED_ID);
-    }
     protected int getUserId(String authHeader) {
         int userId = 0;
         if (authHeader != null && authHeader.startsWith("Bearer ")) {

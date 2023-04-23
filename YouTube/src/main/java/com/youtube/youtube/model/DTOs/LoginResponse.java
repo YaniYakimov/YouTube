@@ -12,5 +12,4 @@ import lombok.Setter;
 public class LoginResponse {
     private UserWithoutPassDTO user;
     private String accessToken;
-    private String refreshToken;
 }
