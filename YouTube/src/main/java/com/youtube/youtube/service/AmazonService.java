@@ -18,6 +18,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -105,7 +106,7 @@ public class AmazonService extends AbstractService{
         S3Object s3Object = amazonS3.getObject(awsBucketName, fileName);
         return s3Object.getObjectContent();
     }
-
+    @Transactional
     public void deleteVideo(int userId, int videoId) {
         Video video=findVideoById(videoId);
         checkVideoOwner(video,userId);

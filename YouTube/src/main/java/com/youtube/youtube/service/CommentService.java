@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -57,6 +58,7 @@ public class CommentService extends AbstractService{
         updatedComment.setDislikes(dislikes);
         return updatedComment;
     }
+    @Transactional
     public void deleteComment(int id) {
         Comment comment = commentRepository.findById(id).orElseThrow(() -> new BadRequestException(NO_SUCH_COMMENT));
         commentRepository.delete(comment);

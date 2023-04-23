@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -78,6 +79,7 @@ public class UserService extends AbstractService{
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException(NO_SUCH_USER));
         return mapper.map(user, UserWithoutPassDTO.class);
     }
+    @Transactional
     public void deleteAccount(int loggedId) {
         userRepository.deleteById(loggedId);
     }
