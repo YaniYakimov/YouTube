@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -81,7 +82,7 @@ public class PlaylistService extends AbstractService {
         }
         return playlist;
     }
-
+@Transactional
     public void deletePlaylist(int userId, int playlistId) {
         Playlist playlist=findPlaylistById(playlistId);
         checkPlaylistOwner(playlist, userId);

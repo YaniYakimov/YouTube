@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 @RestController
 public class VideoController extends AbstractController{
@@ -62,7 +61,7 @@ public class VideoController extends AbstractController{
         return ResponseEntity.ok("Video deleted successfully.");
     }
 
-    @PostMapping("/videos/upload-s3")
+    @PostMapping("/videos/upload")
     public VideoInfoDTO uploadVideoAWS(@RequestParam ("file") MultipartFile file, @RequestParam("name") String name,
                                        @RequestParam("description") String description, @RequestParam("visibilityId") int visibilityId,
                                        @RequestParam("categoryId") int categoryId, @RequestHeader("Authorization") String authHeader){
@@ -71,8 +70,8 @@ public class VideoController extends AbstractController{
     }
 
     @GetMapping("/videos/download")
-    public void downloadVideoAWS(@RequestParam String url, HttpServletResponse resp ){
-        //todo logged
+    public void downloadVideoAWS(@RequestParam String url, HttpServletResponse resp, @RequestHeader("Authorization") String authHeader ){
+        getUserId(authHeader);
         try {
             InputStream inputStream = amazonService.download(url);
             IOUtils.copy(inputStream, resp.getOutputStream());

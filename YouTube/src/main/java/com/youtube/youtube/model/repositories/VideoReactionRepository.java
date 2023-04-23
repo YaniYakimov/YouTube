@@ -20,7 +20,6 @@ public interface VideoReactionRepository extends JpaRepository<VideoReaction, Us
     Optional<VideoReaction> findById(@Param("userId") int userId, @Param("videoId") int videoId);
 
     @Modifying
-    @Transactional
     @Query(value = "INSERT INTO users_react_to_videos (user_id, video_id, reaction) VALUES (:userId, :videoId, :reaction) ON DUPLICATE KEY UPDATE reaction = :reaction", nativeQuery = true)
     void save(@Param("userId") int userId, @Param("videoId") int videoId, @Param("reaction") int reaction);
 
