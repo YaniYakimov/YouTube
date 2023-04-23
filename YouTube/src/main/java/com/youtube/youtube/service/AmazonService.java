@@ -99,7 +99,6 @@ public class AmazonService extends AbstractService{
 
     public S3ObjectInputStream download(String url) {
         String fileName = url.substring(url.lastIndexOf("/")+1);
-        System.out.println(fileName);
         if (!amazonS3.doesObjectExist(awsBucketName, fileName)) {
             throw new NotFoundException(NO_SUCH_VIDEO);
         }
@@ -117,7 +116,7 @@ public class AmazonService extends AbstractService{
 
 
     private String getFileName(String url){
-        String fileName = url.substring(url.lastIndexOf("/")+1);
+        String fileName = url.substring(url.lastIndexOf(File.separator)+1);
         System.out.println(fileName);
         if (!amazonS3.doesObjectExist(awsBucketName, fileName)) {
             throw new NotFoundException(NO_SUCH_VIDEO);

@@ -7,6 +7,7 @@ import com.youtube.youtube.model.entities.Video;
 import com.youtube.youtube.model.entities.Visibility;
 import com.youtube.youtube.model.exceptions.BadRequestException;
 import com.youtube.youtube.model.exceptions.NotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -81,7 +82,7 @@ public class PlaylistService extends AbstractService {
         }
         return playlist;
     }
-
+//    todo check @Transactional
     public void deletePlaylist(int userId, int playlistId) {
         Playlist playlist=findPlaylistById(playlistId);
         checkPlaylistOwner(playlist, userId);
