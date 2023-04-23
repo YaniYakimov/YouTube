@@ -3,7 +3,6 @@ package com.youtube.youtube.service;
 import com.youtube.youtube.model.DTOs.CommentBasicDTO;
 import com.youtube.youtube.model.DTOs.CommentCreateDTO;
 import com.youtube.youtube.model.DTOs.CommentReplyDTO;
-import com.youtube.youtube.model.DTOs.UserWithoutPassDTO;
 import com.youtube.youtube.model.entities.*;
 import com.youtube.youtube.model.exceptions.BadRequestException;
 import com.youtube.youtube.model.exceptions.NotFoundException;
@@ -11,15 +10,11 @@ import com.youtube.youtube.model.exceptions.UnauthorizedException;
 import com.youtube.youtube.model.repositories.CommentReactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class CommentService extends AbstractService{

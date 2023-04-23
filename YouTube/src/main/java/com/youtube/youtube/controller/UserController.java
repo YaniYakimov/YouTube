@@ -1,7 +1,6 @@
 package com.youtube.youtube.controller;
 
 import com.youtube.youtube.model.DTOs.*;
-import com.youtube.youtube.model.exceptions.UnauthorizedException;
 import com.youtube.youtube.service.UserService;
 import jakarta.validation.Valid;
 import lombok.Setter;
@@ -11,7 +10,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 @Setter
 @RestController
 public class UserController extends AbstractController{
@@ -35,10 +33,9 @@ public class UserController extends AbstractController{
     public ResponseEntity<LoginResponse> login(@RequestBody LoginDTO dto) {
         UserWithoutPassDTO respDTO = userService.login(dto);
         String token = jwtUtils.generateToken(respDTO.getId());
-        String refreshToken = jwtUtils.generateRefreshToken(respDTO.getId());
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
-        LoginResponse loginResponse = new LoginResponse(respDTO, token, refreshToken);
+        LoginResponse loginResponse = new LoginResponse(respDTO, token);
         return ResponseEntity.ok().headers(headers).body(loginResponse);
     }
     @PostMapping("/users/sign-out")

@@ -14,12 +14,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService extends AbstractService{
@@ -106,6 +104,10 @@ public class UserService extends AbstractService{
     public UserWithoutPassDTO edit(RegisterDTO dto, int loggedId) {
         User user = userRepository.findById(loggedId).orElseThrow(() -> new BadRequestException(NO_SUCH_USER));
         Location location = locationRepository.findByCountry(dto.getLocation()).orElseThrow(() -> new BadRequestException(NO_SUCH_COUNTRY));
+        Optional<User> allReadyExistUser = userRepository.findByEmail(dto.getEmail());
+        if(allReadyExistUser.isPresent() && allReadyExistUser.get().getId() != loggedId) {
+            throw new BadRequestException("Email already exist");
+        }
         User u = user;
         u.setLocation(location);
         u.setPassword(encoder.encode(dto.getPassword()));

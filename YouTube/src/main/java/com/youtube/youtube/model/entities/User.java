@@ -64,9 +64,6 @@ public class User {
     @OneToMany(mappedBy = "owner")
     private List<Comment> comments = new ArrayList<>();
 
-
-//    private List<Playlist> playlists;
-
     @Override
     public int hashCode() {
         return Objects.hash(id);

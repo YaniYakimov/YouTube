@@ -9,7 +9,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 public class CommentController extends AbstractController{
@@ -23,7 +22,7 @@ public class CommentController extends AbstractController{
     @GetMapping("/comments/{video-id}")
     public Page<CommentReplyDTO> getByVideoId(@PathVariable("video-id") int videoId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "dateCreated"));
-        return commentService.sort(videoId, pageable);
+        return commentService.get(videoId, pageable);
     }
     @PostMapping("/comments/{video-id}/create")
     public CommentCreateDTO createComment(@RequestBody CommentCreateDTO dto, @RequestHeader("Authorization") String authHeader, @PathVariable("video-id") int videoId) {
@@ -47,7 +46,7 @@ public class CommentController extends AbstractController{
     }
     @DeleteMapping("/comments/{id}")
     public ResponseEntity<String> deleteComment(@PathVariable int id, @RequestHeader("Authorization") String authHeader) {
-        int loggedId = getUserId(authHeader);
+        getUserId(authHeader);
         commentService.deleteComment(id);
         return ResponseEntity.ok("Comment deleted successfully.");
     }
