@@ -61,7 +61,7 @@ public class VideoController extends AbstractController{
         return ResponseEntity.ok("Video deleted successfully.");
     }
 
-    @PostMapping("/videos/upload-s3")
+    @PostMapping("/videos/upload")
     public VideoInfoDTO uploadVideoAWS(@RequestParam ("file") MultipartFile file, @RequestParam("name") String name,
                                        @RequestParam("description") String description, @RequestParam("visibilityId") int visibilityId,
                                        @RequestParam("categoryId") int categoryId, @RequestHeader("Authorization") String authHeader){
