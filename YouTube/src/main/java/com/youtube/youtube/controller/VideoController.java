@@ -70,8 +70,8 @@ public class VideoController extends AbstractController{
     }
 
     @GetMapping("/videos/download")
-    public void downloadVideoAWS(@RequestParam String url, HttpServletResponse resp ){
-        //todo logged
+    public void downloadVideoAWS(@RequestParam String url, HttpServletResponse resp, @RequestHeader("Authorization") String authHeader ){
+        getUserId(authHeader);
         try {
             InputStream inputStream = amazonService.download(url);
             IOUtils.copy(inputStream, resp.getOutputStream());
